@@ -1,0 +1,340 @@
+[2m17:02:43[22m [31m[1m[vite][22m[39m [31mInternal server error: E:\projeto-nfl-nba\frontend\src\pages\Home.jsx: Identifier 'nbaUpcoming' has already been declared. (62:8)
+
+[0m [90m 60 |[31m
+ [90m 61 |[31m   [36mconst[31m liveCount [33m=[31m nbaLive[33m.[31mlength [33m+[31m nflLive[33m.[31mlength
+[31m[1m>[22m[31m[90m 62 |[31m   [36mconst[31m nbaUpcoming [33m=[31m nbaUpcomingGames[33m.[31mslice([35m0[31m[33m,[31m [35m3[31m)
+ [90m    |[31m         [31m[1m^[22m[31m
+ [90m 63 |[31m   [36mconst[31m nflUpcoming [33m=[31m nflUpcomingGames[33m.[31mslice([35m0[31m[33m,[31m [35m3[31m)
+ [90m 64 |[31m
+ [90m 65 |[31m   [36mif[31m (loading) {[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mE:/projeto-nfl-nba/frontend/src/pages/Home.jsx[39m:62:8
+[33m  60 |  
+  61 |    const liveCount = nbaLive.length + nflLive.length
+  62 |    const nbaUpcoming = nbaUpcomingGames.slice(0, 3)
+     |                                 ^
+  63 |    const nflUpcoming = nflUpcomingGames.slice(0, 3)
+  64 |  [39m
+      at constructor (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:6616:19)
+      at ScopeHandler.checkRedeclarationInScope (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:1619:19)
+      at ScopeHandler.declareName (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:1585:12)
+      at JSXParserMixin.declareNameFromIdentifier (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:7584:16)
+      at JSXParserMixin.checkIdentifier (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:7580:12)
+      at JSXParserMixin.checkLVal (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:7517:12)
+      at JSXParserMixin.parseVarId (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13429:10)
+      at JSXParserMixin.parseVar (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13400:12)
+      at JSXParserMixin.parseVarStatement (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13247:10)
+      at JSXParserMixin.parseStatementContent (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12868:23)
+      at JSXParserMixin.parseStatementLike (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12784:17)
+      at JSXParserMixin.parseStatementListItem (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12764:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13333:61)
+      at JSXParserMixin.parseBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13326:10)
+      at JSXParserMixin.parseBlock (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13314:10)
+      at JSXParserMixin.parseFunctionBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12117:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12103:10)
+      at E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13462:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12420:14)
+      at JSXParserMixin.parseFunction (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13461:10)
+      at JSXParserMixin.parseExportDefaultExpression (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13924:19)
+      at JSXParserMixin.parseExport (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13845:25)
+      at JSXParserMixin.parseStatementContent (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12895:27)
+      at JSXParserMixin.parseStatementLike (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12784:17)
+      at JSXParserMixin.parseModuleItem (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12761:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13333:36)
+      at JSXParserMixin.parseBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13326:10)
+      at JSXParserMixin.parseProgram (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12639:10)
+      at JSXParserMixin.parseTopLevel (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12629:25)
+      at JSXParserMixin.parse (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:14505:25)
+      at parse (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:14539:38)
+      at parser (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\parser\index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\transformation\normalize-file.js:51:37)
+      at normalizeFile.next (<anonymous>)
+      at run (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\transformation\index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:261:32)
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:223:11)
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:189:28
+      at E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\gensync-utils\async.js:67:7
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:113:33
+      at step (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:287:14)
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:223:11)
+[2m17:02:43[22m [31m[1m[vite][22m[39m Pre-transform error: E:\projeto-nfl-nba\frontend\src\pages\Home.jsx: Identifier 'nbaUpcoming' has already been declared. (62:8)
+
+[0m [90m 60 |[39m
+ [90m 61 |[39m   [36mconst[39m liveCount [33m=[39m nbaLive[33m.[39mlength [33m+[39m nflLive[33m.[39mlength
+[31m[1m>[22m[39m[90m 62 |[39m   [36mconst[39m nbaUpcoming [33m=[39m nbaUpcomingGames[33m.[39mslice([35m0[39m[33m,[39m [35m3[39m)
+ [90m    |[39m         [31m[1m^[22m[39m
+ [90m 63 |[39m   [36mconst[39m nflUpcoming [33m=[39m nflUpcomingGames[33m.[39mslice([35m0[39m[33m,[39m [35m3[39m)
+ [90m 64 |[39m
+ [90m 65 |[39m   [36mif[39m (loading) {[0m
+[2m17:02:44[22m [31m[1m[vite][22m[39m [31mInternal server error: E:\projeto-nfl-nba\frontend\src\pages\Home.jsx: Identifier 'nbaUpcoming' has already been declared. (62:8)
+
+[0m [90m 60 |[31m
+ [90m 61 |[31m   [36mconst[31m liveCount [33m=[31m nbaLive[33m.[31mlength [33m+[31m nflLive[33m.[31mlength
+[31m[1m>[22m[31m[90m 62 |[31m   [36mconst[31m nbaUpcoming [33m=[31m nbaUpcomingGames[33m.[31mslice([35m0[31m[33m,[31m [35m3[31m)
+ [90m    |[31m         [31m[1m^[22m[31m
+ [90m 63 |[31m   [36mconst[31m nflUpcoming [33m=[31m nflUpcomingGames[33m.[31mslice([35m0[31m[33m,[31m [35m3[31m)
+ [90m 64 |[31m
+ [90m 65 |[31m   [36mif[31m (loading) {[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mE:/projeto-nfl-nba/frontend/src/pages/Home.jsx[39m:62:8
+[33m  60 |  
+  61 |    const liveCount = nbaLive.length + nflLive.length
+  62 |    const nbaUpcoming = nbaUpcomingGames.slice(0, 3)
+     |                                 ^
+  63 |    const nflUpcoming = nflUpcomingGames.slice(0, 3)
+  64 |  [39m
+      at constructor (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:6616:19)
+      at ScopeHandler.checkRedeclarationInScope (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:1619:19)
+      at ScopeHandler.declareName (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:1585:12)
+      at JSXParserMixin.declareNameFromIdentifier (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:7584:16)
+      at JSXParserMixin.checkIdentifier (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:7580:12)
+      at JSXParserMixin.checkLVal (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:7517:12)
+      at JSXParserMixin.parseVarId (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13429:10)
+      at JSXParserMixin.parseVar (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13400:12)
+      at JSXParserMixin.parseVarStatement (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13247:10)
+      at JSXParserMixin.parseStatementContent (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12868:23)
+      at JSXParserMixin.parseStatementLike (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12784:17)
+      at JSXParserMixin.parseStatementListItem (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12764:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13333:61)
+      at JSXParserMixin.parseBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13326:10)
+      at JSXParserMixin.parseBlock (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13314:10)
+      at JSXParserMixin.parseFunctionBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12117:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12103:10)
+      at E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13462:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12420:14)
+      at JSXParserMixin.parseFunction (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13461:10)
+      at JSXParserMixin.parseExportDefaultExpression (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13924:19)
+      at JSXParserMixin.parseExport (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13845:25)
+      at JSXParserMixin.parseStatementContent (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12895:27)
+      at JSXParserMixin.parseStatementLike (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12784:17)
+      at JSXParserMixin.parseModuleItem (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12761:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13333:36)
+      at JSXParserMixin.parseBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13326:10)
+      at JSXParserMixin.parseProgram (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12639:10)
+      at JSXParserMixin.parseTopLevel (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12629:25)
+      at JSXParserMixin.parse (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:14505:25)
+      at parse (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:14539:38)
+      at parser (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\parser\index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\transformation\normalize-file.js:51:37)
+      at normalizeFile.next (<anonymous>)
+      at run (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\transformation\index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:261:32)
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:223:11)
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:189:28
+      at E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\gensync-utils\async.js:67:7
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:113:33
+      at step (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:287:14)
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:223:11)
+[2m17:02:53[22m [31m[1m[vite][22m[39m [31mInternal server error: E:\projeto-nfl-nba\frontend\src\pages\Home.jsx: Identifier 'nbaUpcoming' has already been declared. (62:8)
+
+[0m [90m 60 |[31m
+ [90m 61 |[31m   [36mconst[31m liveCount [33m=[31m nbaLive[33m.[31mlength [33m+[31m nflLive[33m.[31mlength
+[31m[1m>[22m[31m[90m 62 |[31m   [36mconst[31m nbaUpcoming [33m=[31m nbaUpcomingGames[33m.[31mslice([35m0[31m[33m,[31m [35m3[31m)
+ [90m    |[31m         [31m[1m^[22m[31m
+ [90m 63 |[31m   [36mconst[31m nflUpcoming [33m=[31m nflUpcomingGames[33m.[31mslice([35m0[31m[33m,[31m [35m3[31m)
+ [90m 64 |[31m
+ [90m 65 |[31m   [36mif[31m (loading) {[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mE:/projeto-nfl-nba/frontend/src/pages/Home.jsx[39m:62:8
+[33m  60 |  
+  61 |    const liveCount = nbaLive.length + nflLive.length
+  62 |    const nbaUpcoming = nbaUpcomingGames.slice(0, 3)
+     |                                 ^
+  63 |    const nflUpcoming = nflUpcomingGames.slice(0, 3)
+  64 |  [39m
+      at constructor (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:6616:19)
+      at ScopeHandler.checkRedeclarationInScope (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:1619:19)
+      at ScopeHandler.declareName (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:1585:12)
+      at JSXParserMixin.declareNameFromIdentifier (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:7584:16)
+      at JSXParserMixin.checkIdentifier (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:7580:12)
+      at JSXParserMixin.checkLVal (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:7517:12)
+      at JSXParserMixin.parseVarId (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13429:10)
+      at JSXParserMixin.parseVar (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13400:12)
+      at JSXParserMixin.parseVarStatement (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13247:10)
+      at JSXParserMixin.parseStatementContent (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12868:23)
+      at JSXParserMixin.parseStatementLike (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12784:17)
+      at JSXParserMixin.parseStatementListItem (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12764:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13333:61)
+      at JSXParserMixin.parseBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13326:10)
+      at JSXParserMixin.parseBlock (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13314:10)
+      at JSXParserMixin.parseFunctionBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12117:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12103:10)
+      at E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13462:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12420:14)
+      at JSXParserMixin.parseFunction (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13461:10)
+      at JSXParserMixin.parseExportDefaultExpression (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13924:19)
+      at JSXParserMixin.parseExport (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13845:25)
+      at JSXParserMixin.parseStatementContent (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12895:27)
+      at JSXParserMixin.parseStatementLike (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12784:17)
+      at JSXParserMixin.parseModuleItem (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12761:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13333:36)
+      at JSXParserMixin.parseBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13326:10)
+      at JSXParserMixin.parseProgram (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12639:10)
+      at JSXParserMixin.parseTopLevel (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12629:25)
+      at JSXParserMixin.parse (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:14505:25)
+      at parse (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:14539:38)
+      at parser (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\parser\index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\transformation\normalize-file.js:51:37)
+      at normalizeFile.next (<anonymous>)
+      at run (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\transformation\index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:261:32)
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:223:11)
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:189:28
+      at E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\gensync-utils\async.js:67:7
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:113:33
+      at step (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:287:14)
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:223:11)
+[2m17:03:08[22m [31m[1m[vite][22m[39m [31mInternal server error: E:\projeto-nfl-nba\frontend\src\pages\Home.jsx: Identifier 'nbaUpcoming' has already been declared. (62:8)
+
+[0m [90m 60 |[31m
+ [90m 61 |[31m   [36mconst[31m liveCount [33m=[31m nbaLive[33m.[31mlength [33m+[31m nflLive[33m.[31mlength
+[31m[1m>[22m[31m[90m 62 |[31m   [36mconst[31m nbaUpcoming [33m=[31m nbaUpcomingGames[33m.[31mslice([35m0[31m[33m,[31m [35m3[31m)
+ [90m    |[31m         [31m[1m^[22m[31m
+ [90m 63 |[31m   [36mconst[31m nflUpcoming [33m=[31m nflUpcomingGames[33m.[31mslice([35m0[31m[33m,[31m [35m3[31m)
+ [90m 64 |[31m
+ [90m 65 |[31m   [36mif[31m (loading) {[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mE:/projeto-nfl-nba/frontend/src/pages/Home.jsx[39m:62:8
+[33m  60 |  
+  61 |    const liveCount = nbaLive.length + nflLive.length
+  62 |    const nbaUpcoming = nbaUpcomingGames.slice(0, 3)
+     |                                 ^
+  63 |    const nflUpcoming = nflUpcomingGames.slice(0, 3)
+  64 |  [39m
+      at constructor (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:6616:19)
+      at ScopeHandler.checkRedeclarationInScope (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:1619:19)
+      at ScopeHandler.declareName (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:1585:12)
+      at JSXParserMixin.declareNameFromIdentifier (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:7584:16)
+      at JSXParserMixin.checkIdentifier (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:7580:12)
+      at JSXParserMixin.checkLVal (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:7517:12)
+      at JSXParserMixin.parseVarId (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13429:10)
+      at JSXParserMixin.parseVar (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13400:12)
+      at JSXParserMixin.parseVarStatement (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13247:10)
+      at JSXParserMixin.parseStatementContent (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12868:23)
+      at JSXParserMixin.parseStatementLike (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12784:17)
+      at JSXParserMixin.parseStatementListItem (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12764:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13333:61)
+      at JSXParserMixin.parseBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13326:10)
+      at JSXParserMixin.parseBlock (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13314:10)
+      at JSXParserMixin.parseFunctionBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12117:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12103:10)
+      at E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13462:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12420:14)
+      at JSXParserMixin.parseFunction (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13461:10)
+      at JSXParserMixin.parseExportDefaultExpression (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13924:19)
+      at JSXParserMixin.parseExport (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13845:25)
+      at JSXParserMixin.parseStatementContent (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12895:27)
+      at JSXParserMixin.parseStatementLike (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12784:17)
+      at JSXParserMixin.parseModuleItem (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12761:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13333:36)
+      at JSXParserMixin.parseBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13326:10)
+      at JSXParserMixin.parseProgram (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12639:10)
+      at JSXParserMixin.parseTopLevel (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12629:25)
+      at JSXParserMixin.parse (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:14505:25)
+      at parse (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:14539:38)
+      at parser (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\parser\index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\transformation\normalize-file.js:51:37)
+      at normalizeFile.next (<anonymous>)
+      at run (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\transformation\index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:261:32)
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:223:11)
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:189:28
+      at E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\gensync-utils\async.js:67:7
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:113:33
+      at step (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:287:14)
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:223:11)
+[2m17:03:13[22m [31m[1m[vite][22m[39m [31mInternal server error: E:\projeto-nfl-nba\frontend\src\pages\Home.jsx: Identifier 'nbaUpcoming' has already been declared. (62:8)
+
+[0m [90m 60 |[31m
+ [90m 61 |[31m   [36mconst[31m liveCount [33m=[31m nbaLive[33m.[31mlength [33m+[31m nflLive[33m.[31mlength
+[31m[1m>[22m[31m[90m 62 |[31m   [36mconst[31m nbaUpcoming [33m=[31m nbaUpcomingGames[33m.[31mslice([35m0[31m[33m,[31m [35m3[31m)
+ [90m    |[31m         [31m[1m^[22m[31m
+ [90m 63 |[31m   [36mconst[31m nflUpcoming [33m=[31m nflUpcomingGames[33m.[31mslice([35m0[31m[33m,[31m [35m3[31m)
+ [90m 64 |[31m
+ [90m 65 |[31m   [36mif[31m (loading) {[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mE:/projeto-nfl-nba/frontend/src/pages/Home.jsx[39m:62:8
+[33m  60 |  
+  61 |    const liveCount = nbaLive.length + nflLive.length
+  62 |    const nbaUpcoming = nbaUpcomingGames.slice(0, 3)
+     |                                 ^
+  63 |    const nflUpcoming = nflUpcomingGames.slice(0, 3)
+  64 |  [39m
+      at constructor (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:6616:19)
+      at ScopeHandler.checkRedeclarationInScope (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:1619:19)
+      at ScopeHandler.declareName (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:1585:12)
+      at JSXParserMixin.declareNameFromIdentifier (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:7584:16)
+      at JSXParserMixin.checkIdentifier (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:7580:12)
+      at JSXParserMixin.checkLVal (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:7517:12)
+      at JSXParserMixin.parseVarId (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13429:10)
+      at JSXParserMixin.parseVar (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13400:12)
+      at JSXParserMixin.parseVarStatement (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13247:10)
+      at JSXParserMixin.parseStatementContent (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12868:23)
+      at JSXParserMixin.parseStatementLike (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12784:17)
+      at JSXParserMixin.parseStatementListItem (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12764:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13333:61)
+      at JSXParserMixin.parseBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13326:10)
+      at JSXParserMixin.parseBlock (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13314:10)
+      at JSXParserMixin.parseFunctionBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12117:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12103:10)
+      at E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13462:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12420:14)
+      at JSXParserMixin.parseFunction (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13461:10)
+      at JSXParserMixin.parseExportDefaultExpression (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13924:19)
+      at JSXParserMixin.parseExport (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13845:25)
+      at JSXParserMixin.parseStatementContent (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12895:27)
+      at JSXParserMixin.parseStatementLike (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12784:17)
+      at JSXParserMixin.parseModuleItem (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12761:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13333:36)
+      at JSXParserMixin.parseBlockBody (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:13326:10)
+      at JSXParserMixin.parseProgram (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12639:10)
+      at JSXParserMixin.parseTopLevel (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:12629:25)
+      at JSXParserMixin.parse (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:14505:25)
+      at parse (E:\projeto-nfl-nba\frontend\node_modules\@babel\parser\lib\index.js:14539:38)
+      at parser (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\parser\index.js:41:34)
+      at parser.next (<anonymous>)
+      at normalizeFile (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\transformation\normalize-file.js:51:37)
+      at normalizeFile.next (<anonymous>)
+      at run (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\transformation\index.js:22:50)
+      at run.next (<anonymous>)
+      at transform (E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\transform.js:22:33)
+      at transform.next (<anonymous>)
+      at step (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:261:32)
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:223:11)
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:189:28
+      at E:\projeto-nfl-nba\frontend\node_modules\@babel\core\lib\gensync-utils\async.js:67:7
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:113:33
+      at step (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:287:14)
+      at E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:273:13
+      at async.call.result.err.err (E:\projeto-nfl-nba\frontend\node_modules\gensync\index.js:223:11)
+^C

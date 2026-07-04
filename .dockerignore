@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/.vite
+**/*.log
+.git
+.gitignore
+.DS_Store
+backend/db/*.db
+backend/db/*.db.bak
+frontend/.env
+backend/.env
