@@ -2,7 +2,22 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import GameCard from '../components/GameCard'
 import { getGames, getStandings, getUpcomingGames } from '../api'
-import { isFinalStatus, isLiveStatus } from '../utils/gameStatus'
+import { isLiveStatus } from '../utils/gameStatus'
+
+function getSaoPauloDateString(date = new Date()) {
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  })
+
+  const parts = Object.fromEntries(
+    formatter.formatToParts(date).map(part => [part.type, part.value])
+  )
+
+  return `${parts.year}-${parts.month}-${parts.day}`
+}
 
 export default function DashboardNBA() {
   const [games, setGames] = useState([])
@@ -10,12 +25,13 @@ export default function DashboardNBA() {
   const [standings, setStandings] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const todayDate = getSaoPauloDateString()
 
   useEffect(() => {
     async function load() {
       try {
         const [gamesRes, standingsRes, upcomingRes] = await Promise.all([
-          getGames({ league: 'NBA', limit: 20 }),
+          getGames({ league: 'NBA', date: todayDate, limit: 100 }),
           getStandings('NBA'),
           getUpcomingGames({ league: 'NBA' })
         ])
@@ -33,7 +49,7 @@ export default function DashboardNBA() {
     // Auto refresh a cada 30s
     const interval = setInterval(load, 30000)
     return () => clearInterval(interval)
-  }, [])
+  }, [todayDate])
 
   if (loading) {
     return (
@@ -45,7 +61,6 @@ export default function DashboardNBA() {
   }
 
   const liveGames = games.filter(g => isLiveStatus(g.status))
-  const recentGames = games.filter(g => isFinalStatus(g.status)).sort((a, b) => new Date(b.game_date) - new Date(a.game_date)).slice(0, 6)
   const upcomingList = upcomingGames.slice(0, 6)
   
   // Estatísticas
@@ -66,7 +81,7 @@ export default function DashboardNBA() {
       {/* Stats */}
       <div className="stats-grid">
         <div className="stat-card">
-          <span className="stat-label">Total de Jogos</span>
+          <span className="stat-label">Jogos Hoje</span>
           <span className="stat-value nba">{games.length}</span>
         </div>
         <div className="stat-card">
@@ -94,20 +109,6 @@ export default function DashboardNBA() {
           </div>
         </section>
       )}
-
-      {/* Recent Games */}
-      <section style={{ marginBottom: '32px' }}>
-        <h2 style={{ marginBottom: '16px', fontSize: '1.2rem', fontWeight: 700 }}>Últimos Resultados</h2>
-        <div className="games-grid">
-          {recentGames.length > 0 ? recentGames.map(game => (
-            <GameCard key={game.id} game={game} />
-          )) : (
-            <p style={{ color: 'var(--text-muted)', gridColumn: '1/-1' }}>
-              Nenhum resultado recente. Faça uma sincronização no Admin.
-            </p>
-          )}
-        </div>
-      </section>
 
       {/* Upcoming Games */}
       <section>
