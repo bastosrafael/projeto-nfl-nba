@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import GameCard from '../components/GameCard'
 import { getGames } from '../api'
+import { isFinalStatus, isLiveStatus, isScheduledStatus } from '../utils/gameStatus'
 
 export default function LiveGames() {
   const [games, setGames] = useState([])
@@ -33,33 +34,17 @@ export default function LiveGames() {
   function getFilteredGames() {
     if (filter === 'nba') return games.filter(g => g.league === 'NBA')
     if (filter === 'nfl') return games.filter(g => g.league === 'NFL')
-    if (filter === 'live') return games.filter(g => 
-      g.status !== 'Final' && g.status !== 'scheduled' && 
-      !g.status?.toLowerCase()?.includes('final') && 
-      !g.status?.toLowerCase()?.includes('schedule')
-    )
-    if (filter === 'recent') return games.filter(g => 
-      g.status === 'Final' || g.status?.toLowerCase()?.includes('final')
-    )
-    if (filter === 'upcoming') return games.filter(g => 
-      g.status === 'scheduled' || g.status?.toLowerCase()?.includes('schedule')
-    )
+    if (filter === 'live') return games.filter(g => isLiveStatus(g.status))
+    if (filter === 'recent') return games.filter(g => isFinalStatus(g.status))
+    if (filter === 'upcoming') return games.filter(g => isScheduledStatus(g.status))
     return games // 'all'
   }
 
-  const liveGames = games.filter(g => 
-    g.status !== 'Final' && g.status !== 'scheduled' && 
-    !g.status?.toLowerCase()?.includes('final') && 
-    !g.status?.toLowerCase()?.includes('schedule')
-  )
+  const liveGames = games.filter(g => isLiveStatus(g.status))
   
-  const recentGames = games.filter(g => 
-    g.status === 'Final' || g.status?.toLowerCase()?.includes('final')
-  )
+  const recentGames = games.filter(g => isFinalStatus(g.status))
   
-  const upcomingGames = games.filter(g => 
-    g.status === 'scheduled' || g.status?.toLowerCase()?.includes('schedule')
-  )
+  const upcomingGames = games.filter(g => isScheduledStatus(g.status))
 
   const displayGames = getFilteredGames()
 

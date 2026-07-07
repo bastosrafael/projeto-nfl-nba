@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import GameCard from '../components/GameCard'
 import { getGames, getStandings, getUpcomingGames } from '../api'
+import { isFinalStatus, isLiveStatus } from '../utils/gameStatus'
 
 export default function DashboardNBA() {
   const [games, setGames] = useState([])
@@ -43,12 +44,8 @@ export default function DashboardNBA() {
     )
   }
 
-  const liveGames = games.filter(g => 
-    g.status !== 'Final' && g.status !== 'scheduled' && !String(g.status).toLowerCase().includes('final') && !String(g.status).toLowerCase().includes('schedule')
-  )
-  const recentGames = games.filter(g => 
-    g.status === 'Final' || String(g.status).toLowerCase().includes('final')
-  ).sort((a, b) => new Date(b.game_date) - new Date(a.game_date)).slice(0, 6)
+  const liveGames = games.filter(g => isLiveStatus(g.status))
+  const recentGames = games.filter(g => isFinalStatus(g.status)).sort((a, b) => new Date(b.game_date) - new Date(a.game_date)).slice(0, 6)
   const upcomingList = upcomingGames.slice(0, 6)
   
   // Estatísticas

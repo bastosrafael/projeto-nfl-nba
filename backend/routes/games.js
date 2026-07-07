@@ -37,9 +37,8 @@ router.get('/live', (req, res) => {
   try {
     const games = queryAll(`
       SELECT * FROM games 
-      WHERE status NOT IN ('scheduled', 'Final', 'STATUS_FINAL', 'STATUS_SCHEDULED')
-        AND status NOT LIKE '%final%'
-        AND status NOT LIKE '%scheduled%'
+      WHERE UPPER(status) IN ('STATUS_IN_PROGRESS', 'STATUS_HALFTIME')
+        OR LOWER(status) IN ('in progress', 'live', 'halftime')
       ORDER BY league, game_date DESC
     `);
     res.json({ success: true, data: games, count: games.length });
