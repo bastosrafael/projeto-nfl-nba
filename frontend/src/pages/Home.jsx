@@ -241,7 +241,10 @@ export default function Home() {
           </div>
         ) : (
           <div className="card" style={{ marginBottom: '20px', textAlign: 'center', padding: '32px' }}>
-            <p style={{ color: 'var(--text-muted)' }}>Nenhum jogo NFL hoje.</p>
+            <p style={{ fontSize: '1.1rem', marginBottom: '8px' }}>Sem jogos NFL hoje</p>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+              Quando houver jogos no dia, eles aparecem aqui.
+            </p>
           </div>
         )}
 

@@ -3,17 +3,33 @@ import GameCard from '../components/GameCard'
 import { getGames } from '../api'
 import { isFinalStatus, isLiveStatus, isScheduledStatus } from '../utils/gameStatus'
 
+function getSaoPauloDateString(date = new Date()) {
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  })
+
+  const parts = Object.fromEntries(
+    formatter.formatToParts(date).map(part => [part.type, part.value])
+  )
+
+  return `${parts.year}-${parts.month}-${parts.day}`
+}
+
 export default function LiveGames() {
   const [games, setGames] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
+  const todayDate = getSaoPauloDateString()
 
   useEffect(() => {
     async function load() {
       try {
         const [nbaRes, nflRes] = await Promise.all([
-          getGames({ league: 'NBA' }),
-          getGames({ league: 'NFL' })
+          getGames({ league: 'NBA', date: todayDate, limit: 100 }),
+          getGames({ league: 'NFL', date: todayDate, limit: 100 })
         ])
         const allGames = [
           ...(nbaRes.data || []),
@@ -29,7 +45,7 @@ export default function LiveGames() {
     load()
     const interval = setInterval(load, 20000)
     return () => clearInterval(interval)
-  }, [])
+  }, [todayDate])
 
   function getFilteredGames() {
     if (filter === 'nba') return games.filter(g => g.league === 'NBA')
@@ -49,7 +65,7 @@ export default function LiveGames() {
   const displayGames = getFilteredGames()
 
   const tabs = [
-    { key: 'all', label: 'Todos' },
+    { key: 'all', label: 'Hoje' },
     { key: 'nba', label: 'NBA' },
     { key: 'nfl', label: 'NFL' },
     { key: 'live', label: '🔴 Ao Vivo' },
@@ -61,8 +77,8 @@ export default function LiveGames() {
     <div>
       <div className="page-header">
         <div>
-          <h1>📅 Jogos</h1>
-          <p className="subtitle">Todos os jogos NBA e NFL em um só lugar</p>
+          <h1>Jogos de Hoje</h1>
+          <p className="subtitle">Jogos NBA e NFL de hoje, no horario de Sao Paulo</p>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
           <span className="status-badge live">🔴 {liveGames.length} ao vivo</span>
@@ -98,7 +114,7 @@ export default function LiveGames() {
         <div className="card" style={{ textAlign: 'center', padding: '60px' }}>
           <p style={{ fontSize: '1.2rem', marginBottom: '8px' }}>🏀🏈</p>
           <p style={{ color: 'var(--text-muted)' }}>
-            Nenhum jogo encontrado. Faça uma sincronização no painel Admin.
+            Nenhum jogo NBA ou NFL hoje.
           </p>
         </div>
       )}
