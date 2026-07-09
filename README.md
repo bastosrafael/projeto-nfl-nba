@@ -11,6 +11,7 @@ Sistema de tracking para NBA e NFL com:
 O projeto esta publicado no Coolify da maquina Linux da rede local.
 
 - URL local atual do app: [http://projeto-nfl-nba.192.168.15.112.sslip.io](http://projeto-nfl-nba.192.168.15.112.sslip.io)
+- URL publica temporaria via Tailscale Funnel: [https://nflnba.tail08f125.ts.net](https://nflnba.tail08f125.ts.net)
 - URL local direta do CasaOS: [http://192.168.15.112:8082](http://192.168.15.112:8082)
 - URL local direta do Coolify: [http://192.168.15.112:8000](http://192.168.15.112:8000)
 - Servidor local: `192.168.15.112`
@@ -19,7 +20,9 @@ O projeto esta publicado no Coolify da maquina Linux da rede local.
 
 Observacoes:
 - o dominio `sslip.io` resolve para o IP local `192.168.15.112`;
-- para acesso fora do Wi-Fi ainda precisa tunel publico ou configuracao de rede publica;
+- para acesso fora do Wi-Fi, o app esta exposto por Tailscale Funnel com URL publica temporaria;
+- a URL publica atual depende do hostname da maquina Tailscale e pode mudar se o nome do host for alterado;
+- quando a temporada da NBA nao esta ativa, a pagina da NBA deve exibir apenas o bloco `Ultimos Resultados` com `Nenhum resultado recente.`;
 - em 06/07/2026, o CasaOS foi movido da porta `80` para `8082` para liberar `80/443` para o Coolify Proxy.
 
 ## Visao Geral
@@ -98,6 +101,7 @@ Veja o guia pronto em [`COOLIFY.md`](COOLIFY.md).
   - proximos jogos
 - O contador generico de `10 jogos` foi removido da logica principal da Home.
 - A tela passou a buscar jogos pela data de hoje no fuso de Sao Paulo.
+- A pagina da NBA foi alinhada ao comportamento da NFL para a area de `Ultimos Resultados`.
 
 ### Estado do deploy
 
@@ -107,6 +111,7 @@ Veja o guia pronto em [`COOLIFY.md`](COOLIFY.md).
 - O Docker esta ativo pelo `systemd` e habilitado para subir no boot.
 - O container do app e o `coolify-proxy` usam politica de restart `unless-stopped`.
 - O CasaOS Gateway esta habilitado no boot e configurado na porta `8082`.
+- O Tailscale Funnel foi habilitado para publicar o app fora da rede local.
 
 ## Portas
 
@@ -209,6 +214,7 @@ O frontend espera campos como:
 - A sync roda automaticamente em intervalo configuravel.
 - A NBA so deve ser ajustada quando o calendario oficial da nova temporada estiver disponivel.
 - Se a URL publica mudar, procure a secao "Estado Atual" acima.
+- Se for preciso publicar novamente fora da rede, verifique primeiro o estado do Tailscale Funnel antes de mexer no deploy.
 
 ## Licenca
 
