@@ -1,0 +1,19 @@
+# Dependencies and generated frontend files
+**/node_modules/
+frontend/dist/
+
+# Local environment configuration and credentials
+backend/.env
+.env
+.env.*
+!.env.example
+
+# Runtime database and backups
+backend/db/*.db
+backend/db/*.db.*
+*.bak
+
+# Logs and local artifacts
+*.log
+*.tmp
+backups/

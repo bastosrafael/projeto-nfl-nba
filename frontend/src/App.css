@@ -831,3 +831,203 @@ tr:hover td {
 .game-time::before {
   content: "🕐 ";
 }
+
+/* Mobile layout: desktop rules remain unchanged above 640px. */
+@media (max-width: 640px) {
+  body {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+
+  .main-content {
+    padding: 16px;
+    padding-top: 80px;
+  }
+
+  .navbar {
+    height: 64px;
+    padding: 0 16px;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .navbar-inner {
+    min-height: 64px;
+    height: 64px;
+    padding: 0;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  .navbar-brand {
+    gap: 7px;
+    font-size: 1.05rem;
+    flex-wrap: nowrap;
+  }
+
+  .navbar-brand span:last-child {
+    display: none;
+  }
+
+  .navbar-links {
+    position: fixed;
+    z-index: 110;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: calc(64px + env(safe-area-inset-bottom));
+    padding: 7px 8px env(safe-area-inset-bottom);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    background: rgba(10, 14, 23, 0.98);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(20px);
+  }
+
+  .navbar-links li {
+    min-width: 0;
+  }
+
+  .navbar-links a {
+    height: 50px;
+    padding: 5px 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.72rem;
+    line-height: 1.1;
+    border-radius: 10px;
+  }
+
+  .navbar-links a.active::after {
+    top: 2px;
+    bottom: auto;
+  }
+
+  .home-hero {
+    min-height: 0;
+    margin-bottom: 16px;
+    padding: 24px 20px;
+    border-radius: 16px;
+  }
+
+  .home-hero::before {
+    width: 240px;
+    height: 240px;
+  }
+
+  .home-title {
+    max-width: 290px;
+    margin-bottom: 10px;
+    font-size: 2rem;
+    line-height: 1.05;
+  }
+
+  .home-subtitle {
+    margin-bottom: 18px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .home-hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .home-hero-actions .btn {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    min-height: 104px;
+    padding: 14px;
+    justify-content: center;
+  }
+
+  .stat-card .stat-label {
+    font-size: 0.68rem;
+  }
+
+  .stat-card .stat-value,
+  .stat-card .stat-value.nba,
+  .stat-card .stat-value.nfl {
+    font-size: 1.45rem;
+  }
+
+  .section-header,
+  .page-header {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .section-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .section-actions .btn,
+  .page-header > .btn {
+    justify-content: center;
+  }
+
+  .page-header > .btn {
+    width: 100%;
+  }
+
+  .games-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .card,
+  .game-card {
+    padding: 14px;
+  }
+
+  .game-card .game-header {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .game-card .teams {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .game-card .vs {
+    display: block;
+  }
+
+  .game-card .team-name {
+    font-size: 0.78rem;
+    line-height: 1.25;
+  }
+
+  .game-card .team-score {
+    font-size: 1.55rem;
+  }
+
+  .game-info {
+    gap: 8px;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+
+  .live-alert {
+    padding: 12px;
+    flex-wrap: wrap;
+  }
+}

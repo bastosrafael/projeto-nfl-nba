@@ -1,214 +1,358 @@
-# Guia para Replicar Este Projeto
+# Guia para replicar o projeto
 
-Este projeto é um tracker de esportes com:
-- `backend` em Node.js + Express
-- `frontend` em React + Vite
-- banco local em SQLite via `sql.js`
-- sincronização periódica com APIs públicas
+Este documento descreve o padrao reutilizavel do NFL + NBA Tracker para criar
+outros trackers, paineis de dados ou aplicacoes sincronizadas.
 
-Use este arquivo como base para replicar a mesma estrutura para outros esportes, ligas ou domínios.
+## Arquitetura recomendada
 
-## Estrutura
+```text
+API externa
+   |
+   v
+Service de integracao
+   |
+   v
+Sync e normalizacao
+   |
+   v
+SQLite persistente
+   |
+   v
+Express /api
+   |
+   v
+React responsivo
+```
+
+Separe integracao, persistencia e apresentacao. Isso permite trocar a fonte de
+dados ou criar uma nova liga sem reescrever a aplicacao inteira.
+
+## Stack
+
+- Backend: Node.js, Express, Axios, dotenv e Morgan.
+- Banco: `sql.js` com persistencia em arquivo SQLite.
+- Frontend: React, React Router e Vite.
+- Producao: Dockerfile multi-stage.
+- Deploy: Coolify.
+- Acesso publico gratuito: Tailscale Funnel.
+
+## Estrutura base
 
 ```text
 projeto/
   backend/
-    server.js
     db/
+      init.js
     routes/
     services/
     sync/
+    server.js
+    package.json
   frontend/
     src/
+      components/
+      pages/
+      App.css
+      App.jsx
+      api.js
+    package.json
     vite.config.js
-  start-dev.bat
+  Dockerfile
+  .dockerignore
+  .gitignore
 ```
 
-## Stack
+Nao versione `node_modules`, `dist`, bancos, backups ou arquivos `.env`.
 
-- Backend: `express`, `cors`, `morgan`, `dotenv`, `axios`
-- Banco: `sql.js` com persistência em arquivo `.db`
-- Frontend: `react`, `react-router-dom`, `vite`
+## Fluxo de inicializacao
 
-## Fluxo Do Projeto
+1. O Express inicia o SQLite.
+2. O servidor agenda a sincronizacao automatica.
+3. Uma sincronizacao inicial busca dados externos.
+4. Services convertem respostas externas para objetos internos.
+5. A camada de sync grava times, jogos, standings e logs.
+6. O frontend consulta somente a API interna.
+7. Em producao, o Express tambem serve `frontend/dist`.
 
-1. O backend sobe e inicializa o banco.
-2. Uma sync inicial roda alguns segundos depois do boot.
-3. Syncs periódicas atualizam times, jogos e standings.
-4. O frontend consome a API do backend em `/api`.
-5. O backend também serve o frontend compilado, se existir em `frontend/dist`.
+## Criar uma nova integracao
 
-## Arquivos Principais
+### 1. Investigar a API
 
-- [backend/server.js](backend/server.js)
-- [backend/db/init.js](backend/db/init.js)
-- [backend/routes/games.js](backend/routes/games.js)
-- [backend/routes/standings.js](backend/routes/standings.js)
-- [backend/routes/adminSync.js](backend/routes/adminSync.js)
-- [backend/services/nbaService.js](backend/services/nbaService.js)
-- [backend/services/nflService.js](backend/services/nflService.js)
-- [backend/sync/syncGames.js](backend/sync/syncGames.js)
-- [backend/sync/syncStandings.js](backend/sync/syncStandings.js)
-- [frontend/src/api.js](frontend/src/api.js)
-- [frontend/src/pages/Home.jsx](frontend/src/pages/Home.jsx)
-- [frontend/src/pages/DashboardNBA.jsx](frontend/src/pages/DashboardNBA.jsx)
-- [frontend/src/pages/DashboardNFL.jsx](frontend/src/pages/DashboardNFL.jsx)
-- [frontend/src/components/GameCard.jsx](frontend/src/components/GameCard.jsx)
+Confirme:
 
-## Banco De Dados
+- como identificar a temporada;
+- tipos de temporada regular, pre-temporada e playoffs;
+- datas de inicio e fim;
+- IDs de times e jogos;
+- status de jogo;
+- fuso dos horarios;
+- paginacao e limites;
+- disponibilidade de calendario futuro.
 
-O banco é criado e mantido em:
+Nao presuma que "temporada atual" significa temporada regular. Muitas APIs
+retornam pre-temporada ou a temporada encerrada se o filtro nao for explicito.
 
-- `backend/db/sports.db`
+### 2. Criar o service
 
-Tabelas principais:
+Crie `backend/services/<nome>Service.js` com funcoes para:
+
+- localizar a temporada desejada;
+- buscar times;
+- buscar jogos;
+- normalizar a resposta externa.
+
+O service nao deve conhecer componentes React.
+
+### 3. Padronizar os jogos
+
+Use um contrato consistente:
+
+- `league`
+- `home_team_id`
+- `away_team_id`
+- `home_team`
+- `away_team`
+- `home_score`
+- `away_score`
+- `status`
+- `period`
+- `game_date` em `YYYY-MM-DD`
+- `game_time` em `HH:mm`
+- `venue`
+- `venue_city`
+- `venue_state`
+
+Converta datas para o fuso escolhido antes de persistir. Neste projeto o fuso e
+`America/Sao_Paulo`.
+
+### 4. Criar a sincronizacao
+
+A funcao de sync deve:
+
+1. abrir o banco;
+2. remover somente os dados antigos da liga correta, quando necessario;
+3. buscar times e jogos;
+4. inserir ou atualizar registros;
+5. atualizar classificacoes;
+6. registrar sucesso ou erro;
+7. persistir o banco.
+
+Uma falha em uma liga nao deve corromper dados de outra liga.
+
+### 5. Automatizar
+
+Use uma sincronizacao no boot e um intervalo configuravel:
+
+```env
+SYNC_INTERVAL=300000
+```
+
+Evite expor uma pagina Admin publica apenas para atualizar dados. Se operacoes
+manuais forem realmente necessarias, proteja-as com autenticacao e autorizacao.
+
+## Calendario semanal
+
+Para uma pagina semanal:
+
+1. calcule a segunda-feira da data de referencia;
+2. use o domingo seguinte como fim;
+3. antes da temporada, localize o primeiro jogo regular futuro;
+4. mostre a semana que contem esse primeiro jogo;
+5. depois do inicio, mostre somente a semana atual;
+6. nao avance automaticamente para outra semana se a temporada ja comecou e a
+   semana atual estiver vazia.
+
+Retorne metadados junto com os jogos:
+
+```json
+{
+  "week": {
+    "start_date": "YYYY-MM-DD",
+    "end_date": "YYYY-MM-DD",
+    "mode": "current"
+  }
+}
+```
+
+Isso permite ao frontend explicar exatamente qual periodo esta sendo exibido.
+
+## Banco
+
+Tabelas comuns:
 
 - `teams`
 - `games`
 - `standings`
 - `sync_log`
 
-### Observação Importante
+Com `sql.js`, o banco e carregado em memoria e exportado para arquivo. Chame a
+rotina de persistencia depois das alteracoes.
 
-Como o projeto usa `sql.js`, o banco é carregado em memória e depois exportado para o arquivo `.db`.
+Em Docker, monte um volume no diretorio do banco. Nunca dependa da camada
+gravavel do container para dados permanentes.
 
-## Como Rodar
+## API
 
-### Deploy No Coolify
-
-Este projeto já tem um `Dockerfile` na raiz e pode subir como um único serviço.
-Veja [`COOLIFY.md`](COOLIFY.md) para o passo a passo.
-
-### Backend
-
-
-```bash
-cd backend
-npm install
-npm run dev
-```
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-### Atalho
-
-Se existir o arquivo:
-
-- `start-dev.bat`
-
-ele inicia backend e frontend em janelas separadas.
-
-## Variáveis De Ambiente
-
-Crie um `.env` no backend quando precisar ajustar URLs ou portas.
-
-Exemplos:
-
-```env
-PORT=3001
-SYNC_INTERVAL=300000
-NBA_SITE_API_URL=https://site.api.espn.com/apis/site/v2/sports/basketball/nba
-NBA_CORE_API_URL=https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba
-NFL_API_URL=https://site.api.espn.com/apis/site/v2/sports/football/nfl
-```
-
-## Como Funciona A Sync
-
-### 1. Coleta
-
-- `services/*Service.js` busca dados da API externa.
-- A lógica de coleta deve devolver um formato padronizado.
-
-### 2. Normalização
-
-- `sync/syncGames.js` converte data/hora para o fuso desejado.
-- Os dados são gravados de forma consistente em `games`, `teams` e `sync_log`.
-
-### 3. Classificação
-
-- `sync/syncStandings.js` recalcula vitórias, derrotas, pontos e ranking.
-- Sempre que mudar a regra de finalização de jogo, atualize aqui.
-
-## Regras Para Replicar Em Outro Esporte
-
-Se você quiser copiar esta estrutura para outra liga, siga este padrão:
-
-1. Criar um novo serviço em `backend/services/<liga>Service.js`.
-2. Criar uma função de sync em `backend/sync/syncGames.js` ou em um novo arquivo.
-3. Ajustar o schema, se o esporte tiver campos extras.
-4. Criar rotas novas em `backend/routes/`.
-5. Adicionar a página correspondente no frontend.
-6. Atualizar `frontend/src/api.js`.
-7. Ajustar `GameCard.jsx` se o esporte tiver layout específico.
-
-## Checklist De Adaptação
-
-- Definir a API de origem
-- Descobrir como a API expõe:
-  - temporada atual
-  - times
-  - jogos
-  - status
-  - local
-  - horário
-- Confirmar fuso horário
-- Confirmar como identificar jogos finalizados
-- Confirmar se existe conferência/divisão/grupo
-- Atualizar o schema do banco, se necessário
-- Ajustar a UI para o novo formato dos dados
-
-## Boas Práticas
-
-- Padronizar `game_date` como `YYYY-MM-DD`
-- Padronizar `game_time` como `HH:mm`
-- Guardar `venue`, `venue_city` e `venue_state` quando existirem
-- Registrar todas as syncs em `sync_log`
-- Evitar depender de datas relativas sem normalização de fuso
-- Validar no frontend depois de cada mudança de API
-
-## Endpoints Da API
+Endpoints basicos:
 
 - `GET /api/health`
 - `GET /api/games`
 - `GET /api/games/live`
 - `GET /api/games/upcoming`
 - `GET /api/standings`
-- `POST /api/admin/sync`
-- `GET /api/admin/logs`
-- `GET /api/admin/status`
 
-## Dicas Para Replicar Rapidamente
+Boas praticas:
 
-Se for criar uma nova versão desse projeto para outra liga:
+- valide parametros;
+- limite quantidades;
+- normalize erros em JSON;
+- retorne `404` para endpoints inexistentes;
+- nao exponha stack traces ou segredos.
 
-- copie a estrutura de `backend/services`
-- copie a estrutura de `backend/sync`
-- ajuste `routes`
-- mantenha o contrato de resposta usado pelo frontend:
-  - `league`
-  - `home_team`
-  - `away_team`
-  - `home_score`
-  - `away_score`
-  - `status`
-  - `game_date`
-  - `game_time`
-  - `venue`
-  - `venue_city`
-  - `venue_state`
+## Frontend
 
-## Resumo
+Crie:
 
-O segredo para replicar este projeto é manter três camadas separadas:
+- Home resumida;
+- pagina por categoria ou liga;
+- pagina ao vivo;
+- pagina de classificacao;
+- componentes reutilizaveis para cards e tabelas.
 
-- integração com API externa
-- normalização/sync
-- apresentação no frontend
+O frontend deve usar caminhos relativos, como `/api/games`, para funcionar no
+mesmo dominio do backend.
 
-Se você seguir essa separação, fica simples trocar NBA/NFL por qualquer outra liga ou assunto.
+## Responsividade sem alterar desktop
+
+Mantenha os estilos de desktop como padrao e adicione regras moveis no final do
+CSS:
+
+```css
+@media (max-width: 640px) {
+  /* Somente ajustes para celular. */
+}
+```
+
+Checklist:
+
+- sem rolagem horizontal;
+- menu acessivel com uma mao;
+- botoes com pelo menos 44px de altura;
+- cards legiveis em 360px;
+- grade 2 x 2 para indicadores pequenos;
+- `safe-area-inset-bottom` em navegacao inferior;
+- teste separado em 360px e 1280px.
+
+Elementos com `backdrop-filter` podem criar um novo contexto para descendentes
+`position: fixed`. Se uma barra inferior ficar presa no topo, remova o filtro
+do ancestral no breakpoint movel e aplique o efeito diretamente na barra.
+
+## Docker
+
+Use build multi-stage:
+
+1. instalar dependencias do frontend;
+2. compilar com Vite;
+3. instalar apenas dependencias de producao do backend;
+4. copiar `dist` para a imagem final;
+5. expor uma unica porta.
+
+Teste:
+
+```bash
+docker build -t meu-app .
+docker run --rm -p 3001:3001 meu-app
+```
+
+## Coolify
+
+Configuracao comum:
+
+- Build Pack: Dockerfile.
+- Base Directory: `/`.
+- Dockerfile: `/Dockerfile`.
+- Porta: a mesma usada pelo Express.
+- Volume: diretorio do SQLite.
+- Variaveis: configuradas no painel, nunca no Git.
+
+Veja [COOLIFY.md](COOLIFY.md).
+
+## Publicacao gratuita
+
+O Tailscale Funnel fornece uma URL HTTPS publica sem comprar dominio:
+
+```bash
+sudo tailscale funnel --bg http://127.0.0.1:3001
+tailscale funnel status
+```
+
+Ele e apropriado para projetos pessoais e compartilhamento controlado. O
+endereco depende do hostname e do nome da tailnet.
+
+## Seguranca
+
+`.gitignore` minimo:
+
+```gitignore
+**/node_modules/
+frontend/dist/
+backend/.env
+.env
+.env.*
+!.env.example
+backend/db/*.db
+backend/db/*.db.*
+*.log
+```
+
+Antes do push:
+
+1. revise `git status`;
+2. use `git diff --cached`;
+3. procure tokens e senhas;
+4. confirme que nenhum `.env` esta rastreado;
+5. confirme que banco e backups nao estao no commit.
+
+Se uma credencial ja foi publicada, apenas apaga-la do commit novo nao basta:
+revogue a credencial e, se necessario, limpe o historico.
+
+## Testes antes de publicar
+
+- verificacao de sintaxe do backend;
+- build do frontend;
+- `GET /api/health`;
+- jogos ao vivo sem falsos positivos;
+- filtros de temporada;
+- limites de segunda a domingo;
+- pagina vazia quando nao ha calendario;
+- tela de 360 x 800;
+- tela de 1280 x 800;
+- reinicio do container mantendo o banco;
+- acesso externo pelo Funnel.
+
+## Checklist final para um novo projeto
+
+- [ ] API e licenca de uso confirmadas
+- [ ] Temporada regular identificada explicitamente
+- [ ] Datas e fuso normalizados
+- [ ] Contrato de dados definido
+- [ ] Sync automatica configurada
+- [ ] Banco persistente
+- [ ] API validada
+- [ ] Frontend responsivo
+- [ ] Dockerfile testado
+- [ ] Volume configurado
+- [ ] Segredos fora do Git
+- [ ] Backup criado
+- [ ] URL local testada
+- [ ] URL publica testada
+
+## Regra principal
+
+Uma aplicacao facil de replicar mantem independentes:
+
+1. fonte externa;
+2. normalizacao e persistencia;
+3. API interna;
+4. interface;
+5. infraestrutura de deploy.

@@ -12,7 +12,7 @@ export default function StandingsTable({ standings, league }) {
       <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
         <p style={{ color: 'var(--text-muted)' }}>Nenhum dado de classificação disponível ainda.</p>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: '8px' }}>
-          Faça uma sincronização no painel Admin para buscar os dados.
+          A atualização é automática e será exibida quando os dados oficiais estiverem disponíveis.
         </p>
       </div>
     )

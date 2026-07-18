@@ -16,7 +16,6 @@ app.use(morgan('dev'));
 
 app.use('/api/games', require('./routes/games'));
 app.use('/api/standings', require('./routes/standings'));
-app.use('/api/admin', require('./routes/adminSync'));
 
 app.get('/api/health', (req, res) => {
   res.json({ 
@@ -59,6 +58,9 @@ async function start() {
   // Servir frontend (se existir)
   const frontendPath = path.join(__dirname, '..', 'frontend', 'dist');
   app.use(express.static(frontendPath));
+  app.use('/api', (req, res) => {
+    res.status(404).json({ success: false, error: 'Endpoint não encontrado.' });
+  });
   app.get('*', (req, res) => {
     if (!req.path.startsWith('/api')) {
       res.sendFile(path.join(frontendPath, 'index.html'));

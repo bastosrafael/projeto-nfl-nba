@@ -88,6 +88,8 @@ async function syncNFL() {
   let db;
   try {
     db = await getDb();
+    db.run("DELETE FROM games WHERE league = 'NFL'");
+    db.run("DELETE FROM teams WHERE league = 'NFL'");
     const [teamsData, scoreboardData] = await Promise.all([
       nflService.getTeams(), nflService.getSeasonGames()
     ]);

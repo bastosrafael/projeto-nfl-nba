@@ -88,7 +88,7 @@ async function getSeasonGames() {
     const regularSeason = league?.calendar?.find(entry => entry.value === '2');
 
     if (!regularSeason?.startDate || !regularSeason?.endDate) {
-      return await getScoreboard();
+      return { events: [] };
     }
 
     const startDate = regularSeason.startDate.slice(0, 10).replace(/-/g, '');
@@ -161,6 +161,7 @@ function extractGames(scoreboardData) {
   const games = [];
   try {
     for (const event of scoreboardData.events) {
+      if (Number(event.season?.type) !== 2) continue;
       const comp = event.competitions[0];
       const competitors = comp.competitors || [];
       const home = competitors.find(c => c.homeAway === 'home');
