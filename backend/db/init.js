@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 const DB_PATH = path.join(__dirname, 'sports.db');
-const isNetlifyDb = Boolean(process.env.NETLIFY_DB_URL || process.env.NETLIFY_DATABASE_URL || process.env.NETLIFY);
+const isNetlifyDb = Boolean(process.env.NETLIFY_DB_URL || process.env.NETLIFY_DATABASE_URL || process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NETLIFY_FUNCTION_NAME);
 let db = null;
 let SQL = null;
 let pool = null;
@@ -17,7 +17,9 @@ function pgSql(sql) {
 async function initPostgres() {
   if (pgReady) return;
   const { Pool } = require('pg');
-  pool = new Pool({ connectionString: process.env.NETLIFY_DB_URL || process.env.NETLIFY_DATABASE_URL, max: 3, idleTimeoutMillis: 10000, connectionTimeoutMillis: 10000 });
+  const { getConnectionString } = require('@netlify/database');
+  const connectionString = process.env.NETLIFY_DB_URL || process.env.NETLIFY_DATABASE_URL || getConnectionString();
+  pool = new Pool({ connectionString, max: 3, idleTimeoutMillis: 10000, connectionTimeoutMillis: 10000 });
   await pool.query(`
     CREATE TABLE IF NOT EXISTS teams (
       id BIGINT PRIMARY KEY, name TEXT NOT NULL, display_name TEXT, abbreviation TEXT,
