@@ -62,26 +62,20 @@ async function getCurrentSeason() {
     }
 
     const now = Date.now();
-    const regularSeasons = [];
+    let fallbackSeason = null;
 
     for (const ref of seasonRefs) {
       const seasonUrl = ref.$ref.replace('http://', 'https://');
       const { data: season } = await axios.get(seasonUrl, { timeout: 20000 });
-      const start = Date.parse(season.type?.startDate);
-      const end = Date.parse(season.type?.endDate);
+      if (!fallbackSeason) fallbackSeason = season;
 
-      if (Number(season.type?.type) === 2 && Number.isFinite(start) && Number.isFinite(end)) {
-        regularSeasons.push({ season, start, end });
+      const startDate = season.type?.startDate || season.startDate;
+      if (startDate && new Date(startDate).getTime() <= now) {
+        return season;
       }
     }
 
-    const activeSeason = regularSeasons.find(({ start, end }) => now >= start && now <= end);
-    if (activeSeason) return activeSeason.season;
-
-    const upcomingSeasons = regularSeasons
-      .filter(({ start }) => start > now)
-      .sort((a, b) => a.start - b.start);
-    return upcomingSeasons[0]?.season || null;
+    return fallbackSeason;
   } catch (error) {
     console.error('[NBA] Erro ao buscar temporada atual:', error.message);
     return null;
@@ -186,7 +180,6 @@ async function getGames() {
       });
 
       for (const event of data.events || []) {
-        if (Number(event.season?.type) !== 2) continue;
         if (seen.has(event.id)) continue;
         seen.add(event.id);
         allGames.push(event);
