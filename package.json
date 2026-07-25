@@ -1,0 +1,16 @@
+{
+  "name": "projeto-nfl-nba-netlify",
+  "private": true,
+  "scripts": { "build:frontend": "npm --prefix frontend ci && npm --prefix frontend run build" },
+  "dependencies": {
+    "@netlify/database": "latest",
+    "axios": "^1.6.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "morgan": "^1.10.0",
+    "pg": "^8.13.1",
+    "serverless-http": "^3.2.0",
+    "sql.js": "^1.14.1"
+  }
+}
