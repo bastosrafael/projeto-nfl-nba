@@ -4,10 +4,17 @@ import GameCard from '../components/GameCard'
 import { getGames, getStandings, getUpcomingGames } from '../api'
 import { isLiveStatus } from '../utils/gameStatus'
 
+function formatWeekDate(value) {
+  if (!value) return ''
+  const [year, month, day] = value.split('-')
+  return `${day}/${month}/${year}`
+}
+
 export default function DashboardNBA() {
   const [games, setGames] = useState([])
   const [upcomingGames, setUpcomingGames] = useState([])
   const [standings, setStandings] = useState({})
+  const [displayedWeek, setDisplayedWeek] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -21,7 +28,10 @@ export default function DashboardNBA() {
         ])
         if (gamesRes.success) setGames(gamesRes.data || [])
         if (standingsRes.success) setStandings(standingsRes.data || {})
-        if (upcomingRes.success) setUpcomingGames(upcomingRes.data || [])
+        if (upcomingRes.success) {
+          setUpcomingGames(upcomingRes.data || [])
+          setDisplayedWeek(upcomingRes.week || null)
+        }
       } catch (err) {
         setError(err.message)
       } finally {
@@ -46,7 +56,7 @@ export default function DashboardNBA() {
 
   const liveGames = games.filter(g => isLiveStatus(g.status))
   const recentGames = []
-  const upcomingList = upcomingGames.slice(0, 6)
+  const upcomingList = upcomingGames
   
   // Estatísticas
   const totalTeams = Object.values(standings).flat().length
@@ -78,7 +88,7 @@ export default function DashboardNBA() {
           <span className="stat-value nba">{totalTeams || 30}</span>
         </div>
         <div className="stat-card">
-          <span className="stat-label">Próximos Jogos</span>
+          <span className="stat-label">Jogos na Semana</span>
           <span className="stat-value nba">{upcomingList.length}</span>
         </div>
       </div>
@@ -111,13 +121,18 @@ export default function DashboardNBA() {
 
       {/* Upcoming Games */}
       <section>
-        <h2 style={{ marginBottom: '16px', fontSize: '1.2rem', fontWeight: 700 }}>Próximos Jogos</h2>
+        <h2 style={{ marginBottom: '4px', fontSize: '1.2rem', fontWeight: 700 }}>Jogos da Semana</h2>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>
+          {displayedWeek
+            ? `${displayedWeek.mode === 'first_scheduled' ? 'Primeira semana da temporada regular' : 'Semana atual'}: ${formatWeekDate(displayedWeek.start_date)} a ${formatWeekDate(displayedWeek.end_date)}. Atualização automática.`
+            : 'De segunda a domingo, com atualização automática.'}
+        </p>
         <div className="games-grid">
           {upcomingList.length > 0 ? upcomingList.map(game => (
             <GameCard key={game.id} game={game} />
           )) : (
             <p style={{ color: 'var(--text-muted)', gridColumn: '1/-1' }}>
-              Nenhum jogo agendado encontrado.
+              Nenhum jogo agendado nesta semana.
             </p>
           )}
         </div>

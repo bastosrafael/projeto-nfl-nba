@@ -5,7 +5,6 @@ const links = [
   { to: '/nfl', label: 'NFL' },
   { to: '/live', label: 'Ao Vivo' },
   { to: '/standings', label: 'Classificação' },
-  { to: '/admin', label: 'Admin' },
 ]
 
 export default function Navbar() {
