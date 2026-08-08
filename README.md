@@ -234,6 +234,40 @@ Requisitos:
 O nome final inclui o dominio da rede Tailscale, por exemplo
 `https://nflnba.<tailnet>.ts.net`.
 
+### Remocao do LocalTunnel legado
+
+Em 2026-08-08, o container Docker legado `localtunnel` foi auditado e removido.
+Ele publicava `https://nflnba.loca.lt` e apenas encaminhava requisicoes para
+`127.0.0.1:3001`; nao hospedava codigo nem dados da aplicacao.
+
+A remocao ocorreu depois de confirmar que:
+
+- a producao documentada e ativa usa o Tailscale Funnel em
+  `https://nflnba.tail08f125.ts.net`;
+- site, `/api/health` e dados da NFL continuaram respondendo depois que o
+  container foi parado;
+- o frontend usa caminhos relativos em `/api` no mesmo servico Express;
+- nao existe configuracao Netlify, Function, redirect ou referencia ao
+  LocalTunnel no repositorio e em seu historico;
+- os logs do LocalTunnel nao registravam requests desde o unico `GET /` de
+  2026-07-15.
+
+A aplicacao Coolify, o volume SQLite, a porta 3001, o Tailscale Funnel e a
+imagem `node:20-alpine` foram preservados. Se o tunel legado for realmente
+necessario no futuro, sua configuracao anterior pode ser recriada com:
+
+```bash
+docker run -d \
+  --name localtunnel \
+  --network host \
+  --restart unless-stopped \
+  node:20-alpine \
+  sh -lc 'npm install -g localtunnel >/dev/null 2>&1 && lt --port 3001 --subdomain nflnba --print-requests'
+```
+
+O LocalTunnel gratuito pode ignorar o subdominio solicitado; por isso ele nao
+deve substituir o endpoint de producao documentado acima.
+
 ## Verificacao e manutencao
 
 ```bash
