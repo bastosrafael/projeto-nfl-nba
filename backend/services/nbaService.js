@@ -55,27 +55,42 @@ const NBA_CONFERENCE_MAP = {
 
 async function getCurrentSeason() {
   try {
-    const { data } = await coreApi.get('/seasons?limit=10');
+    const { data } = await coreApi.get('/seasons?limit=3');
     const seasonRefs = data.items || [];
     if (seasonRefs.length === 0) {
       return null;
     }
 
     const now = Date.now();
-    let fallbackSeason = null;
-
-    for (const ref of seasonRefs) {
-      const seasonUrl = ref.$ref.replace('http://', 'https://');
-      const { data: season } = await axios.get(seasonUrl, { timeout: 20000 });
-      if (!fallbackSeason) fallbackSeason = season;
-
-      const startDate = season.type?.startDate || season.startDate;
-      if (startDate && new Date(startDate).getTime() <= now) {
+    const seasons = await Promise.all(seasonRefs.map(async ref => {
+      try {
+        const seasonUrl = ref.$ref.replace('http://', 'https://');
+        const { data: season } = await axios.get(seasonUrl, { timeout: 20000 });
         return season;
+      } catch (error) {
+        console.warn('[NBA] Erro ao carregar uma temporada:', error.message);
+        return null;
       }
+    }));
+    const availableRegularSeasons = [];
+
+    for (const season of seasons.filter(Boolean)) {
+      const regularSeason = season.type?.type === 2
+        ? season.type
+        : season.types?.items?.find(type => type.type === 2);
+
+      if (!regularSeason?.startDate || !regularSeason?.endDate) continue;
+
+      availableRegularSeasons.push({
+        ...season,
+        type: regularSeason
+      });
     }
 
-    return fallbackSeason;
+    return availableRegularSeasons
+      .filter(season => new Date(season.type.endDate).getTime() >= now)
+      .sort((a, b) => new Date(a.type.startDate) - new Date(b.type.startDate))[0]
+      || null;
   } catch (error) {
     console.error('[NBA] Erro ao buscar temporada atual:', error.message);
     return null;
@@ -180,6 +195,7 @@ async function getGames() {
       });
 
       for (const event of data.events || []) {
+        if (event.season?.type !== 2) continue;
         if (seen.has(event.id)) continue;
         seen.add(event.id);
         allGames.push(event);
