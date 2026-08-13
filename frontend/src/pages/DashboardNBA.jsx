@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import GameCard from '../components/GameCard'
 import { getGames, getStandings, getUpcomingGames } from '../api'
-import { isLiveStatus } from '../utils/gameStatus'
+import { isFinalStatus, isLiveStatus } from '../utils/gameStatus'
 
 function formatWeekDate(value) {
   if (!value) return ''
@@ -16,7 +16,6 @@ export default function DashboardNBA() {
   const [standings, setStandings] = useState({})
   const [displayedWeek, setDisplayedWeek] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
 
   useEffect(() => {
     async function load() {
@@ -33,7 +32,7 @@ export default function DashboardNBA() {
           setDisplayedWeek(upcomingRes.week || null)
         }
       } catch (err) {
-        setError(err.message)
+        console.error(err)
       } finally {
         setLoading(false)
       }
