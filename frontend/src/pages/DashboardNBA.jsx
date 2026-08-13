@@ -55,8 +55,10 @@ export default function DashboardNBA() {
   }
 
   const liveGames = games.filter(g => isLiveStatus(g.status))
-  const recentGames = []
-  const upcomingList = upcomingGames
+  const recentGames = games
+    .filter(g => isFinalStatus(g.status))
+    .sort((a, b) => new Date(b.game_date) - new Date(a.game_date))
+    .slice(0, 6)
   
   // Estatísticas
   const totalTeams = Object.values(standings).flat().length
@@ -89,7 +91,7 @@ export default function DashboardNBA() {
         </div>
         <div className="stat-card">
           <span className="stat-label">Jogos na Semana</span>
-          <span className="stat-value nba">{upcomingList.length}</span>
+          <span className="stat-value nba">{upcomingGames.length}</span>
         </div>
       </div>
 
@@ -128,7 +130,7 @@ export default function DashboardNBA() {
             : 'De segunda a domingo, com atualização automática.'}
         </p>
         <div className="games-grid">
-          {upcomingList.length > 0 ? upcomingList.map(game => (
+          {upcomingGames.length > 0 ? upcomingGames.map(game => (
             <GameCard key={game.id} game={game} />
           )) : (
             <p style={{ color: 'var(--text-muted)', gridColumn: '1/-1' }}>
