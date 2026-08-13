@@ -6,14 +6,16 @@ serve a API e o frontend React pelo mesmo container.
 
 ## Aplicacao publicada
 
-- URL publica: [https://nflnba.tail08f125.ts.net](https://nflnba.tail08f125.ts.net)
+- URL publica principal: [https://projeto-nfl-nba.netlify.app](https://projeto-nfl-nba.netlify.app)
+- URL alternativa do backend: [https://nflnba.tail08f125.ts.net](https://nflnba.tail08f125.ts.net)
 - URL da rede local: [http://projeto-nfl-nba.192.168.15.112.sslip.io](http://projeto-nfl-nba.192.168.15.112.sslip.io)
 - Porta interna da aplicacao: `3001`
 - Deploy: Dockerfile gerenciado pelo Coolify
 - Repositorio: `bastosrafael/projeto-nfl-nba`
 
 A URL `sslip.io` funciona somente quando o dispositivo consegue acessar a rede
-`192.168.15.0/24`. O acesso externo usa Tailscale Funnel com HTTPS.
+`192.168.15.0/24`. O endereco principal para usuarios e o dominio do Netlify;
+o Tailscale Funnel fornece o acesso HTTPS alternativo ao servico no Coolify.
 
 ## Funcionalidades
 
@@ -242,13 +244,13 @@ Ele publicava `https://nflnba.loca.lt` e apenas encaminhava requisicoes para
 
 A remocao ocorreu depois de confirmar que:
 
-- a producao documentada e ativa usa o Tailscale Funnel em
+- o backend publicado continuava ativo pelo Tailscale Funnel em
   `https://nflnba.tail08f125.ts.net`;
 - site, `/api/health` e dados da NFL continuaram respondendo depois que o
   container foi parado;
 - o frontend usa caminhos relativos em `/api` no mesmo servico Express;
-- nao existe configuracao Netlify, Function, redirect ou referencia ao
-  LocalTunnel no repositorio e em seu historico;
+- nao existia configuracao Netlify, Function, redirect ou referencia ao
+  LocalTunnel no repositorio e em seu historico naquele momento;
 - os logs do LocalTunnel nao registravam requests desde o unico `GET /` de
   2026-07-15.
 

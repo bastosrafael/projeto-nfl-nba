@@ -55,7 +55,14 @@ rede local.
 
 ## Acesso publico
 
-O Tailscale Funnel encaminha HTTPS para a porta local:
+A URL publica principal usada pelos usuarios e:
+
+```text
+https://projeto-nfl-nba.netlify.app
+```
+
+O Tailscale Funnel tambem encaminha HTTPS para a porta local e funciona como
+endereco alternativo do backend:
 
 ```bash
 sudo tailscale funnel --bg http://127.0.0.1:3001
@@ -90,7 +97,8 @@ O valor recomendado `300000` equivale a cinco minutos.
 ```bash
 curl http://127.0.0.1:3001/api/health
 curl "http://127.0.0.1:3001/api/games/upcoming?league=NFL"
-curl -I https://nflnba.tail08f125.ts.net/
+curl -I https://projeto-nfl-nba.netlify.app/
+curl https://projeto-nfl-nba.netlify.app/api/health
 ```
 
 Teste tambem:
