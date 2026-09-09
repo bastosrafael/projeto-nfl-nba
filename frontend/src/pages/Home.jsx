@@ -65,6 +65,7 @@ export default function Home() {
   const nflTodayList = [...nflGames].sort(sortByGameTime).slice(0, 3)
   const nbaUpcomingList = nbaUpcomingGames.slice(0, 3)
   const nflUpcomingList = nflUpcomingGames.slice(0, 3)
+  const nflUpcomingWeek = nflUpcomingGames[0]?.season_week ?? null
 
   const liveCount = nbaLive.length + nflLive.length
   const todayCount = nbaGames.length + nflGames.length
@@ -250,7 +251,8 @@ export default function Home() {
 
         {nflUpcomingList.length > 0 && (
           <div style={{ marginBottom: '20px' }}>
-            <h3 className="section-subheading">Próximos Jogos</h3>
+            <h3 className="section-subheading">
+              {nflUpcomingWeek ? `Próximos Jogos — Semana ${nflUpcomingWeek}` : 'Próximos Jogos'}</h3>
             <div className="games-grid">
               {nflUpcomingList.map(game => <GameCard key={game.id} game={game} />)}
             </div>
