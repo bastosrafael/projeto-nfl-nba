@@ -28,6 +28,11 @@ export function getUpcomingGames(params = {}) {
   return fetchApi(`/games/upcoming${query ? `?${query}` : ''}`);
 }
 
+export function getNFLSchedule(season) {
+  const query = season ? `?season=${season}` : '';
+  return fetchApi(`/games/nfl/schedule${query}`);
+}
+
 export function getStandings(league) {
   const query = league ? `?league=${league}` : '';
   return fetchApi(`/standings${query}`);

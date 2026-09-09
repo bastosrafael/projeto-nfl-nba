@@ -1,35 +1,32 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import GameCard from '../components/GameCard'
-import { getGames, getStandings, getUpcomingGames } from '../api'
+import { getGames, getNFLSchedule, getStandings, getUpcomingGames } from '../api'
 import { isFinalStatus, isLiveStatus } from '../utils/gameStatus'
-
-function formatWeekDate(value) {
-  if (!value) return ''
-  const [year, month, day] = value.split('-')
-  return `${day}/${month}/${year}`
-}
 
 export default function DashboardNFL() {
   const [games, setGames] = useState([])
   const [upcomingGames, setUpcomingGames] = useState([])
+  const [scheduleWeeks, setScheduleWeeks] = useState([])
+  const [scheduleSeason, setScheduleSeason] = useState(null)
   const [standings, setStandings] = useState({})
-  const [displayedWeek, setDisplayedWeek] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
       try {
-        const [gamesRes, standingsRes, upcomingRes] = await Promise.all([
+        const [gamesRes, standingsRes, upcomingRes, scheduleRes] = await Promise.all([
           getGames({ league: 'NFL', limit: 20 }),
           getStandings('NFL'),
-          getUpcomingGames({ league: 'NFL' })
+          getUpcomingGames({ league: 'NFL' }),
+          getNFLSchedule()
         ])
         if (gamesRes.success) setGames(gamesRes.data || [])
         if (standingsRes.success) setStandings(standingsRes.data || {})
-        if (upcomingRes.success) {
-          setUpcomingGames(upcomingRes.data || [])
-          setDisplayedWeek(upcomingRes.week || null)
+        if (upcomingRes.success) setUpcomingGames(upcomingRes.data || [])
+        if (scheduleRes.success) {
+          setScheduleWeeks(scheduleRes.data || [])
+          setScheduleSeason(scheduleRes.season || null)
         }
       } catch (err) {
         console.error(err)
@@ -118,19 +115,26 @@ export default function DashboardNFL() {
       <section>
         <h2 style={{ marginBottom: '4px', fontSize: '1.2rem', fontWeight: 700 }}>Jogos da Semana</h2>
         <p style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>
-          {displayedWeek
-            ? `${displayedWeek.mode === 'first_scheduled' ? 'Primeira semana da temporada regular' : 'Semana atual'}: ${formatWeekDate(displayedWeek.start_date)} a ${formatWeekDate(displayedWeek.end_date)}. Atualização automática.`
-            : 'De segunda a domingo, com atualização automática.'}
+          {scheduleSeason
+            ? `Temporada regular ${scheduleSeason.year}, organizada pelas semanas oficiais da NFL. Atualização automática.`
+            : 'Aguardando o calendário oficial da temporada regular.'}
         </p>
-        <div className="games-grid">
-          {upcomingGames.length > 0 ? upcomingGames.map(game => (
-            <GameCard key={game.id} game={game} />
-          )) : (
-            <p style={{ color: 'var(--text-muted)', gridColumn: '1/-1' }}>
-              Nenhum jogo agendado nesta semana.
-            </p>
-          )}
-        </div>
+        {scheduleWeeks.length > 0 ? scheduleWeeks.map(week => (
+          <div key={`${week.season_year}-${week.season_week}`} style={{ marginBottom: '32px' }}>
+            <h3 style={{ marginBottom: '16px', fontSize: '1.05rem', fontWeight: 700 }}>
+              Semana {week.season_week}
+            </h3>
+            <div className="games-grid">
+              {week.games.map(game => (
+                <GameCard key={game.id} game={game} />
+              ))}
+            </div>
+          </div>
+        )) : (
+          <p style={{ color: 'var(--text-muted)' }}>
+            Calendário oficial ainda não disponível.
+          </p>
+        )}
       </section>
     </div>
   )

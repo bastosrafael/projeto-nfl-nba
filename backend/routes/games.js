@@ -95,6 +95,79 @@ router.get('/live', (req, res) => {
   }
 });
 
+router.get('/nfl/schedule', (req, res) => {
+  try {
+    const requestedSeason = parseInt(req.query.season, 10);
+    const seasonRows = Number.isFinite(requestedSeason)
+      ? queryAll(`
+          SELECT DISTINCT season_year, season_type
+          FROM games
+          WHERE league = 'NFL'
+            AND season_year = ?
+            AND season_type = 2
+            AND season_week IS NOT NULL
+          LIMIT 1
+        `, [requestedSeason])
+      : queryAll(`
+          SELECT season_year, season_type
+          FROM games
+          WHERE league = 'NFL'
+            AND season_type = 2
+            AND season_week IS NOT NULL
+          ORDER BY season_year DESC
+          LIMIT 1
+        `);
+
+    const season = seasonRows[0];
+    if (!season) {
+      return res.json({ success: true, season: null, data: [], count: 0 });
+    }
+
+    const weeks = queryAll(`
+      SELECT season_year, season_type, season_week, start_date, end_date
+      FROM nfl_schedule_weeks
+      WHERE season_year = ? AND season_type = ?
+      ORDER BY season_week ASC
+    `, [season.season_year, season.season_type]);
+
+    const games = queryAll(`
+      SELECT * FROM games
+      WHERE league = 'NFL'
+        AND season_year = ?
+        AND season_type = ?
+        AND season_week IS NOT NULL
+      ORDER BY season_week ASC, game_date ASC, game_time ASC, id ASC
+    `, [season.season_year, season.season_type]);
+
+    const gamesByWeek = new Map();
+    for (const game of games) {
+      if (!gamesByWeek.has(game.season_week)) gamesByWeek.set(game.season_week, []);
+      gamesByWeek.get(game.season_week).push(game);
+    }
+
+    const schedule = weeks.map(week => ({
+      season_year: week.season_year,
+      season_type: week.season_type,
+      season_week: week.season_week,
+      start_date: week.start_date,
+      end_date: week.end_date,
+      games: gamesByWeek.get(week.season_week) || []
+    }));
+
+    return res.json({
+      success: true,
+      season: {
+        year: season.season_year,
+        type: season.season_type
+      },
+      data: schedule,
+      count: games.length
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 router.get('/upcoming', (req, res) => {
   try {
     const limit = Math.max(1, Math.min(300, parseInt(req.query.limit) || 200));

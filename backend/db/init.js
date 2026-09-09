@@ -68,6 +68,20 @@ function initTables() {
   ensureColumn('games', 'game_time TEXT');
   ensureColumn('games', 'venue_city TEXT');
   ensureColumn('games', 'venue_state TEXT');
+  ensureColumn('games', 'season_year INTEGER');
+  ensureColumn('games', 'season_type INTEGER');
+  ensureColumn('games', 'season_week INTEGER');
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS nfl_schedule_weeks (
+      season_year INTEGER NOT NULL,
+      season_type INTEGER NOT NULL,
+      season_week INTEGER NOT NULL,
+      start_date TEXT NOT NULL,
+      end_date TEXT NOT NULL,
+      PRIMARY KEY (season_year, season_type, season_week)
+    )
+  `);
   
   db.run(`
     CREATE TABLE IF NOT EXISTS standings (

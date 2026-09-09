@@ -101,7 +101,10 @@ async function getSeasonGames() {
       }
     });
 
-    return data;
+    return {
+      ...data,
+      regularSeasonCalendar: regularSeason
+    };
   } catch (error) {
     console.error('[NFL] Erro ao buscar calendario completo:', error.message);
     return { events: [] };
@@ -161,6 +164,8 @@ function extractGames(scoreboardData) {
   const games = [];
   try {
     for (const event of scoreboardData.events) {
+      if (event.season?.type !== 2) continue;
+
       const comp = event.competitions[0];
       const competitors = comp.competitors || [];
       const home = competitors.find(c => c.homeAway === 'home');
@@ -181,6 +186,9 @@ function extractGames(scoreboardData) {
         period: isLive ? (comp.status?.displayClock || '') : '',
         game_time: time,
         game_date: date,
+        season_year: parseInt(event.season?.year || 0),
+        season_type: parseInt(event.season?.type || 0),
+        season_week: parseInt(event.week?.number || 0),
         venue: comp.venue?.fullName || '',
         venue_city: comp.venue?.address?.city || '',
         venue_state: comp.venue?.address?.state || '',
@@ -193,4 +201,25 @@ function extractGames(scoreboardData) {
   return games;
 }
 
-module.exports = { getScoreboard, getSeasonGames, getTeams, getStandings, extractTeams, extractGames };
+function extractSeasonWeeks(scoreboardData) {
+  const calendar = scoreboardData?.regularSeasonCalendar;
+  const seasonYear = scoreboardData?.events?.find(event => event.season?.type === 2)?.season?.year;
+
+  if (!calendar?.entries || !seasonYear) return [];
+
+  return calendar.entries.map(entry => ({
+    season_year: parseInt(seasonYear),
+    season_type: parseInt(calendar.value),
+    season_week: parseInt(entry.value),
+    start_date: entry.startDate,
+    end_date: entry.endDate
+  })).filter(week => (
+    Number.isFinite(week.season_year)
+    && Number.isFinite(week.season_type)
+    && Number.isFinite(week.season_week)
+    && week.start_date
+    && week.end_date
+  ));
+}
+
+module.exports = { getScoreboard, getSeasonGames, getTeams, getStandings, extractTeams, extractGames, extractSeasonWeeks };

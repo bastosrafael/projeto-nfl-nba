@@ -104,15 +104,27 @@ async function syncNFL() {
     console.log(`[Sync] NFL: ${nflTeams.length} times`);
     
     const nflGames = nflService.extractGames(scoreboardData);
+    const nflWeeks = nflService.extractSeasonWeeks(scoreboardData);
+
+    for (const week of nflWeeks) {
+      db.run(`INSERT OR REPLACE INTO nfl_schedule_weeks
+        (season_year, season_type, season_week, start_date, end_date)
+        VALUES (?, ?, ?, ?, ?)`, [
+        week.season_year, week.season_type, week.season_week, week.start_date, week.end_date
+      ]);
+    }
+
     for (const g of nflGames) {
       const homeTeamId = leagueTeamId('NFL', g.home_team_id);
       const awayTeamId = leagueTeamId('NFL', g.away_team_id);
       db.run(`INSERT OR REPLACE INTO games (id, league, home_team_id, away_team_id, home_team, away_team,
-        home_score, away_score, status, period, game_date, game_time, venue, venue_city, venue_state, updated_at)
-        VALUES (?, 'NFL', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`, [
+        home_score, away_score, status, period, game_date, game_time, season_year, season_type, season_week,
+        venue, venue_city, venue_state, updated_at)
+        VALUES (?, 'NFL', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`, [
         g.id, homeTeamId || null, awayTeamId || null,
         g.home_team, g.away_team, g.home_score, g.away_score,
-        g.status, g.period, g.game_date, g.game_time, g.venue, g.venue_city || '', g.venue_state || ''
+        g.status, g.period, g.game_date, g.game_time, g.season_year, g.season_type, g.season_week,
+        g.venue, g.venue_city || '', g.venue_state || ''
       ]);
     }
     console.log(`[Sync] NFL: ${nflGames.length} jogos`);
