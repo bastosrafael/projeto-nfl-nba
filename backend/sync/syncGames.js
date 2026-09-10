@@ -1,4 +1,4 @@
-const { getDb, logSync, saveDb } = require('../db/init');
+const { getDb, run, logSync, saveDb } = require('../db/init');
 
 function toBrazilDateParts(dateStr) {
   if (!dateStr) {
@@ -43,17 +43,24 @@ function leagueTeamId(league, id) {
 
 async function syncNBA() {
   console.log('[Sync] Iniciando sincronizacao NBA...');
-  let db;
   try {
-    db = await getDb();
-    db.run("DELETE FROM games WHERE league = 'NBA'");
-    db.run("DELETE FROM teams WHERE league = 'NBA'");
+    await getDb();
+    await run("DELETE FROM games WHERE league = 'NBA'");
+    await run("DELETE FROM teams WHERE league = 'NBA'");
     const nbaTeams = await nbaService.getTeams();
     
     for (const t of nbaTeams) {
       const teamId = leagueTeamId('NBA', t.id);
-      db.run(`INSERT OR REPLACE INTO teams (id, name, display_name, abbreviation, league, conference, division, updated_at)
-        VALUES (?, ?, ?, ?, 'NBA', ?, ?, CURRENT_TIMESTAMP)`, [
+      await run(`INSERT INTO teams (id, name, display_name, abbreviation, league, conference, division, updated_at)
+        VALUES (?, ?, ?, ?, 'NBA', ?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT (id) DO UPDATE SET
+          name = excluded.name,
+          display_name = excluded.display_name,
+          abbreviation = excluded.abbreviation,
+          league = excluded.league,
+          conference = excluded.conference,
+          division = excluded.division,
+          updated_at = CURRENT_TIMESTAMP`, [
         teamId, t.display_name || t.name, t.display_name || t.name, t.abbreviation,
         t.conference || '', t.division || ''
       ]);
@@ -65,9 +72,25 @@ async function syncNBA() {
     for (const g of nbaGameRows) {
       const homeTeamId = leagueTeamId('NBA', g.home_team_id);
       const awayTeamId = leagueTeamId('NBA', g.away_team_id);
-      db.run(`INSERT OR REPLACE INTO games (id, league, home_team_id, away_team_id, home_team, away_team,
+      await run(`INSERT INTO games (id, league, home_team_id, away_team_id, home_team, away_team,
         home_score, away_score, status, period, game_date, game_time, venue, venue_city, venue_state, updated_at)
-        VALUES (?, 'NBA', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`, [
+        VALUES (?, 'NBA', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT (id) DO UPDATE SET
+          league = excluded.league,
+          home_team_id = excluded.home_team_id,
+          away_team_id = excluded.away_team_id,
+          home_team = excluded.home_team,
+          away_team = excluded.away_team,
+          home_score = excluded.home_score,
+          away_score = excluded.away_score,
+          status = excluded.status,
+          period = excluded.period,
+          game_date = excluded.game_date,
+          game_time = excluded.game_time,
+          venue = excluded.venue,
+          venue_city = excluded.venue_city,
+          venue_state = excluded.venue_state,
+          updated_at = CURRENT_TIMESTAMP`, [
         g.id, homeTeamId || null, awayTeamId || null,
         g.home_team || 'Time Casa', g.away_team || 'Time Fora',
         g.home_score || 0, g.away_score || 0,
@@ -75,19 +98,18 @@ async function syncNBA() {
       ]);
     }
     console.log(`[Sync] NBA: ${nbaGameRows.length} jogos`);
-    logSync('NBA', 'success', `${nbaTeams.length} times, ${nbaGameRows.length} jogos`);
+    await logSync('NBA', 'success', `${nbaTeams.length} times, ${nbaGameRows.length} jogos`);
   } catch (error) {
     console.error('[Sync] Erro NBA:', error.message);
-    logSync('NBA', 'error', error.message);
+    await logSync('NBA', 'error', error.message);
   }
   saveDb();
 }
 
 async function syncNFL() {
   console.log('[Sync] Iniciando sincronizacao NFL...');
-  let db;
   try {
-    db = await getDb();
+    await getDb();
     const [teamsData, scoreboardData] = await Promise.all([
       nflService.getTeams(), nflService.getSeasonGames()
     ]);
@@ -96,8 +118,17 @@ async function syncNFL() {
     for (const t of nflTeams) {
       if (t.id) {
         const teamId = leagueTeamId('NFL', t.id);
-        db.run(`INSERT OR REPLACE INTO teams (id, name, display_name, abbreviation, league, conference, division, logo_url, updated_at)
-          VALUES (?, ?, ?, ?, 'NFL', ?, ?, ?, CURRENT_TIMESTAMP)`,
+        await run(`INSERT INTO teams (id, name, display_name, abbreviation, league, conference, division, logo_url, updated_at)
+          VALUES (?, ?, ?, ?, 'NFL', ?, ?, ?, CURRENT_TIMESTAMP)
+          ON CONFLICT (id) DO UPDATE SET
+            name = excluded.name,
+            display_name = excluded.display_name,
+            abbreviation = excluded.abbreviation,
+            league = excluded.league,
+            conference = excluded.conference,
+            division = excluded.division,
+            logo_url = excluded.logo_url,
+            updated_at = CURRENT_TIMESTAMP`,
           [teamId, t.name, t.display_name, t.abbreviation, t.conference || '', t.division || '', t.logo_url]);
       }
     }
@@ -107,9 +138,12 @@ async function syncNFL() {
     const nflWeeks = nflService.extractSeasonWeeks(scoreboardData);
 
     for (const week of nflWeeks) {
-      db.run(`INSERT OR REPLACE INTO nfl_schedule_weeks
+      await run(`INSERT INTO nfl_schedule_weeks
         (season_year, season_type, season_week, start_date, end_date)
-        VALUES (?, ?, ?, ?, ?)`, [
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT (season_year, season_type, season_week) DO UPDATE SET
+          start_date = excluded.start_date,
+          end_date = excluded.end_date`, [
         week.season_year, week.season_type, week.season_week, week.start_date, week.end_date
       ]);
     }
@@ -117,10 +151,29 @@ async function syncNFL() {
     for (const g of nflGames) {
       const homeTeamId = leagueTeamId('NFL', g.home_team_id);
       const awayTeamId = leagueTeamId('NFL', g.away_team_id);
-      db.run(`INSERT OR REPLACE INTO games (id, league, home_team_id, away_team_id, home_team, away_team,
+      await run(`INSERT INTO games (id, league, home_team_id, away_team_id, home_team, away_team,
         home_score, away_score, status, period, game_date, game_time, season_year, season_type, season_week,
         venue, venue_city, venue_state, updated_at)
-        VALUES (?, 'NFL', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`, [
+        VALUES (?, 'NFL', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        ON CONFLICT (id) DO UPDATE SET
+          league = excluded.league,
+          home_team_id = excluded.home_team_id,
+          away_team_id = excluded.away_team_id,
+          home_team = excluded.home_team,
+          away_team = excluded.away_team,
+          home_score = excluded.home_score,
+          away_score = excluded.away_score,
+          status = excluded.status,
+          period = excluded.period,
+          game_date = excluded.game_date,
+          game_time = excluded.game_time,
+          season_year = excluded.season_year,
+          season_type = excluded.season_type,
+          season_week = excluded.season_week,
+          venue = excluded.venue,
+          venue_city = excluded.venue_city,
+          venue_state = excluded.venue_state,
+          updated_at = CURRENT_TIMESTAMP`, [
         g.id, homeTeamId || null, awayTeamId || null,
         g.home_team, g.away_team, g.home_score, g.away_score,
         g.status, g.period, g.game_date, g.game_time, g.season_year, g.season_type, g.season_week,
@@ -128,10 +181,10 @@ async function syncNFL() {
       ]);
     }
     console.log(`[Sync] NFL: ${nflGames.length} jogos`);
-    logSync('NFL', 'success', `${nflTeams.length} times, ${nflGames.length} jogos`);
+    await logSync('NFL', 'success', `${nflTeams.length} times, ${nflGames.length} jogos`);
   } catch (error) {
     console.error('[Sync] Erro NFL:', error.message);
-    logSync('NFL', 'error', error.message);
+    await logSync('NFL', 'error', error.message);
   }
   saveDb();
 }

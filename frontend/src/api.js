@@ -41,18 +41,3 @@ export function getStandings(league) {
 export function getHealth() {
   return fetchApi('/health');
 }
-
-export function getSyncLogs(limit = 20) {
-  return fetchApi(`/admin/logs?limit=${limit}`);
-}
-
-export function getSystemStatus() {
-  return fetchApi('/admin/status');
-}
-
-export function triggerSync(league = 'all') {
-  return fetchApi('/admin/sync', {
-    method: 'POST',
-    body: JSON.stringify({ league })
-  });
-}

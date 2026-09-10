@@ -147,8 +147,8 @@ Use uma sincronizacao no boot e um intervalo configuravel:
 SYNC_INTERVAL=300000
 ```
 
-Evite expor uma pagina Admin publica apenas para atualizar dados. Se operacoes
-manuais forem realmente necessarias, proteja-as com autenticacao e autorizacao.
+Prefira atualizar os dados automaticamente. Se operacoes manuais forem realmente
+necessarias, proteja-as com autenticacao e autorizacao.
 
 ## Calendario semanal
 

@@ -74,7 +74,7 @@ reinicios ou alteracoes de hostname.
 
 ## Sincronizacao
 
-Nao existe painel Admin. O backend:
+O backend:
 
 1. inicializa o banco;
 2. executa uma sincronizacao inicial;

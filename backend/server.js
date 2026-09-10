@@ -1,30 +1,12 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
-const morgan = require('morgan');
 const path = require('path');
 const { getDb } = require('./db/init');
+const app = require('./app');
 
-const app = express();
 const PORT = process.env.PORT || 3001;
 let server = null;
 let shuttingDown = false;
-
-app.use(cors());
-app.use(express.json());
-app.use(morgan('dev'));
-
-app.use('/api/games', require('./routes/games'));
-app.use('/api/standings', require('./routes/standings'));
-app.use('/api/admin', require('./routes/adminSync'));
-
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'online', 
-    timestamp: new Date().toISOString(),
-    version: '1.0.0'
-  });
-});
 
 // Inicializar banco
 async function start() {

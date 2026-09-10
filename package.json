@@ -1,0 +1,14 @@
+{
+  "name": "nfl-nba-tracker-netlify",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build": "npm --prefix backend ci && npm --prefix frontend ci && npm --prefix frontend run build"
+  },
+  "dependencies": {
+    "serverless-http": "^3.2.0"
+  },
+  "engines": {
+    "node": ">=18.14.0"
+  }
+}

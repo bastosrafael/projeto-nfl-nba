@@ -32,7 +32,7 @@ function getWeekRangeForDate(dateString) {
   };
 }
 
-function findScheduledGames(league, startDate, endDate, limit) {
+async function findScheduledGames(league, startDate, endDate, limit) {
   const params = [startDate, endDate];
   let sql = `
     SELECT * FROM games
@@ -50,7 +50,7 @@ function findScheduledGames(league, startDate, endDate, limit) {
   return queryAll(sql, params);
 }
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const { league, status, date } = req.query;
   const limit = Math.max(1, Math.min(100, parseInt(req.query.limit) || 50));
   
@@ -74,16 +74,16 @@ router.get('/', (req, res) => {
   params.push(limit);
   
   try {
-    const games = queryAll(sql, params);
+    const games = await queryAll(sql, params);
     res.json({ success: true, data: games, count: games.length });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
-router.get('/live', (req, res) => {
+router.get('/live', async (req, res) => {
   try {
-    const games = queryAll(`
+    const games = await queryAll(`
       SELECT * FROM games 
       WHERE UPPER(status) IN ('STATUS_IN_PROGRESS', 'STATUS_HALFTIME')
         OR LOWER(status) IN ('in progress', 'live', 'halftime')
@@ -95,11 +95,11 @@ router.get('/live', (req, res) => {
   }
 });
 
-router.get('/nfl/schedule', (req, res) => {
+router.get('/nfl/schedule', async (req, res) => {
   try {
     const requestedSeason = parseInt(req.query.season, 10);
     const seasonRows = Number.isFinite(requestedSeason)
-      ? queryAll(`
+      ? await queryAll(`
           SELECT DISTINCT season_year, season_type
           FROM games
           WHERE league = 'NFL'
@@ -108,7 +108,7 @@ router.get('/nfl/schedule', (req, res) => {
             AND season_week IS NOT NULL
           LIMIT 1
         `, [requestedSeason])
-      : queryAll(`
+      : await queryAll(`
           SELECT season_year, season_type
           FROM games
           WHERE league = 'NFL'
@@ -123,14 +123,14 @@ router.get('/nfl/schedule', (req, res) => {
       return res.json({ success: true, season: null, data: [], count: 0 });
     }
 
-    const weeks = queryAll(`
+    const weeks = await queryAll(`
       SELECT season_year, season_type, season_week, start_date, end_date
       FROM nfl_schedule_weeks
       WHERE season_year = ? AND season_type = ?
       ORDER BY season_week ASC
     `, [season.season_year, season.season_type]);
 
-    const games = queryAll(`
+    const games = await queryAll(`
       SELECT * FROM games
       WHERE league = 'NFL'
         AND season_year = ?
@@ -168,7 +168,7 @@ router.get('/nfl/schedule', (req, res) => {
   }
 });
 
-router.get('/upcoming', (req, res) => {
+router.get('/upcoming', async (req, res) => {
   try {
     const limit = Math.max(1, Math.min(300, parseInt(req.query.limit) || 200));
     const requestedLeague = req.query.league?.toUpperCase();
@@ -176,10 +176,10 @@ router.get('/upcoming', (req, res) => {
     const today = getBrazilDateString();
     let { startDate, endDate } = getWeekRangeForDate(today);
     let mode = 'current';
-    let games = findScheduledGames(league, startDate, endDate, limit);
+    let games = await findScheduledGames(league, startDate, endDate, limit);
 
     if (games.length === 0 && league) {
-      const firstRows = queryAll(`
+      const firstRows = await queryAll(`
         SELECT MIN(game_date) AS first_date
         FROM games
         WHERE league = ?
@@ -189,7 +189,7 @@ router.get('/upcoming', (req, res) => {
 
       if (firstDate && today < firstDate) {
         ({ startDate, endDate } = getWeekRangeForDate(firstDate));
-        games = findScheduledGames(league, startDate, endDate, limit);
+        games = await findScheduledGames(league, startDate, endDate, limit);
         mode = 'first_scheduled';
       }
     }

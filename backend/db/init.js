@@ -2,6 +2,9 @@ const initSqlJs = require('sql.js');
 const path = require('path');
 const fs = require('fs');
 
+const postgresEnabled = Boolean(process.env.NETLIFY_DB_URL);
+const postgresAdapter = postgresEnabled ? require('./postgres') : null;
+
 const DB_PATH = path.join(__dirname, 'sports.db');
 
 let db = null;
@@ -116,23 +119,28 @@ function initTables() {
 
 function ensureColumn(tableName, columnDefinition) {
   const columnName = columnDefinition.split(' ')[0];
-  const existingColumns = queryAll(`PRAGMA table_info(${tableName})`);
+  const existingColumns = queryAllSqlite(`PRAGMA table_info(${tableName})`);
   if (!existingColumns.some(column => column.name === columnName)) {
     db.run(`ALTER TABLE ${tableName} ADD COLUMN ${columnDefinition}`);
   }
 }
 
-function logSync(league, status, message = '') {
-  db.run('INSERT INTO sync_log (league, status, message) VALUES (?, ?, ?)', 
+async function run(sql, params = []) {
+  const database = await getDb();
+  database.run(sql, params);
+}
+
+async function logSync(league, status, message = '') {
+  await run('INSERT INTO sync_log (league, status, message) VALUES (?, ?, ?)',
     [league, status, message]);
   saveDb();
 }
 
-function getSyncLogs(limit = 20) {
+async function getSyncLogs(limit = 20) {
   return queryAll('SELECT * FROM sync_log ORDER BY created_at DESC LIMIT ?', [limit]);
 }
 
-function queryAll(sql, params = []) {
+function queryAllSqlite(sql, params = []) {
   if (params.length > 0) {
     const stmt = db.prepare(sql);
     stmt.bind(params);
@@ -154,9 +162,16 @@ function queryAll(sql, params = []) {
   });
 }
 
-function queryOne(sql, params = []) {
-  const rows = queryAll(sql, params);
+async function queryAll(sql, params = []) {
+  await getDb();
+  return queryAllSqlite(sql, params);
+}
+
+async function queryOne(sql, params = []) {
+  const rows = await queryAll(sql, params);
   return rows.length > 0 ? rows[0] : null;
 }
 
-module.exports = { getDb, logSync, getSyncLogs, queryAll, queryOne, saveDb };
+const sqliteAdapter = { getDb, run, logSync, getSyncLogs, queryAll, queryOne, saveDb };
+
+module.exports = postgresEnabled ? postgresAdapter : sqliteAdapter;

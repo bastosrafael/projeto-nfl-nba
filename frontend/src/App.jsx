@@ -5,7 +5,6 @@ import DashboardNBA from './pages/DashboardNBA'
 import DashboardNFL from './pages/DashboardNFL'
 import LiveGames from './pages/LiveGames'
 import Standings from './pages/Standings'
-import AdminPanel from './pages/AdminPanel'
 
 function App() {
   return (
@@ -18,7 +17,6 @@ function App() {
           <Route path="/nfl" element={<DashboardNFL />} />
           <Route path="/live" element={<LiveGames />} />
           <Route path="/standings" element={<Standings />} />
-          <Route path="/admin" element={<AdminPanel />} />
         </Routes>
       </main>
     </div>

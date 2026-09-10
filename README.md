@@ -29,8 +29,8 @@ o Tailscale Funnel fornece o acesso HTTPS alternativo ao servico no Coolify.
 - Banco SQLite persistente.
 - API JSON para saude, jogos e classificacao.
 
-Nao existe painel Admin publico. A atualizacao dos dados e automatica para
-reduzir manutencao e impedir que visitantes disparem sincronizacoes.
+A atualizacao dos dados e automatica para reduzir manutencao e impedir que
+visitantes disparem sincronizacoes.
 
 ## Regras das temporadas
 

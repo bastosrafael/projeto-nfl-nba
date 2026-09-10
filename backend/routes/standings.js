@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { queryAll } = require('../db/init');
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const { league } = req.query;
   
   let sql = `
@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
   sql += ' ORDER BY s.league, s.win_pct DESC, s.wins DESC';
   
   try {
-    const standings = queryAll(sql, params);
+    const standings = await queryAll(sql, params);
     
     const grouped = {};
     for (const entry of standings) {

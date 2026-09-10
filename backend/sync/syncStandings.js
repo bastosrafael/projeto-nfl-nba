@@ -1,4 +1,4 @@
-const { getDb, logSync, queryAll, saveDb } = require('../db/init');
+const { getDb, run, logSync, queryAll, saveDb } = require('../db/init');
 
 function isFinalStatus(status) {
   if (!status) return false;
@@ -8,16 +8,15 @@ function isFinalStatus(status) {
 
 async function updateStandings() {
   console.log('[Standings] Atualizando classificacoes...');
-  let db;
   try {
-    db = await getDb();
+    await getDb();
     
     // NBA
-    db.run("DELETE FROM standings WHERE league = 'NBA'");
-    const nbaTeams = queryAll("SELECT DISTINCT t.id, t.name, t.conference, t.division FROM teams t WHERE t.league = 'NBA'");
+    await run("DELETE FROM standings WHERE league = 'NBA'");
+    const nbaTeams = await queryAll("SELECT DISTINCT t.id, t.name, t.conference, t.division FROM teams t WHERE t.league = 'NBA'");
     
     for (const team of nbaTeams) {
-      const games = queryAll(
+      const games = await queryAll(
         "SELECT home_score, away_score, home_team_id, away_team_id, status FROM games WHERE (home_team_id = ? OR away_team_id = ?) AND league = 'NBA'",
         [team.id, team.id]
       );
@@ -33,23 +32,25 @@ async function updateStandings() {
       }
       const gp = wins + losses;
       const wp = gp > 0 ? wins / gp : 0;
-      db.run(`INSERT INTO standings (league, team_id, team, wins, losses, draws, points_for, points_against, win_pct, games_played, conference_rank, division_rank)
+      await run(`INSERT INTO standings (league, team_id, team, wins, losses, draws, points_for, points_against, win_pct, games_played, conference_rank, division_rank)
         VALUES ('NBA', ?, ?, ?, ?, 0, ?, ?, ?, ?, 0, 0)`,
         [team.id, team.name, wins, losses, pf, pa, wp, gp]);
     }
     
     // Rankings NBA
     for (const conf of ['Eastern', 'Western', 'East', 'West']) {
-      const ct = queryAll(`SELECT s.id FROM standings s JOIN teams t ON t.id = s.team_id WHERE s.league = 'NBA' AND t.conference = ? ORDER BY s.win_pct DESC`, [conf]);
-      ct.forEach((team, i) => db.run('UPDATE standings SET conference_rank = ? WHERE id = ?', [i + 1, team.id]));
+      const ct = await queryAll(`SELECT s.id FROM standings s JOIN teams t ON t.id = s.team_id WHERE s.league = 'NBA' AND t.conference = ? ORDER BY s.win_pct DESC`, [conf]);
+      for (const [index, team] of ct.entries()) {
+        await run('UPDATE standings SET conference_rank = ? WHERE id = ?', [index + 1, team.id]);
+      }
     }
     
     // NFL
-    db.run("DELETE FROM standings WHERE league = 'NFL'");
-    const nflTeams = queryAll("SELECT DISTINCT t.id, t.name FROM teams t WHERE t.league = 'NFL'");
+    await run("DELETE FROM standings WHERE league = 'NFL'");
+    const nflTeams = await queryAll("SELECT DISTINCT t.id, t.name FROM teams t WHERE t.league = 'NFL'");
     
     for (const team of nflTeams) {
-      const games = queryAll(
+      const games = await queryAll(
         "SELECT home_score, away_score, home_team_id, away_team_id, status FROM games WHERE (home_team_id = ? OR away_team_id = ?) AND league = 'NFL'",
         [team.id, team.id]
       );
@@ -65,16 +66,16 @@ async function updateStandings() {
       }
       const gp = wins + losses + draws;
       const wp = gp > 0 ? wins / gp : 0;
-      db.run(`INSERT INTO standings (league, team_id, team, wins, losses, draws, points_for, points_against, win_pct, games_played, conference_rank, division_rank)
+      await run(`INSERT INTO standings (league, team_id, team, wins, losses, draws, points_for, points_against, win_pct, games_played, conference_rank, division_rank)
         VALUES ('NFL', ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0)`,
         [team.id, team.name, wins, losses, draws, pf, pa, wp, gp]);
     }
     
-    logSync('STANDINGS', 'success', 'NBA e NFL atualizadas');
+    await logSync('STANDINGS', 'success', 'NBA e NFL atualizadas');
     console.log('[Standings] OK');
   } catch (error) {
     console.error('[Standings] Erro:', error.message);
-    logSync('STANDINGS', 'error', error.message);
+    await logSync('STANDINGS', 'error', error.message);
   }
   saveDb();
 }

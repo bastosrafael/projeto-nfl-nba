@@ -17,3 +17,7 @@ backend/db/*.db.*
 *.log
 *.tmp
 backups/
+
+# Netlify local development state
+.netlify/
+deno.lock
