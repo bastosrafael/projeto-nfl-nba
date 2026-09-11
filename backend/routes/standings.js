@@ -18,7 +18,16 @@ router.get('/', async (req, res) => {
     params.push(league.toUpperCase());
   }
   
-  sql += ' ORDER BY s.league, s.win_pct DESC, s.wins DESC';
+  sql += ` ORDER BY
+    s.league,
+    t.conference,
+    CASE WHEN s.conference_rank > 0 THEN s.conference_rank ELSE 9999 END,
+    s.win_pct DESC,
+    s.wins DESC,
+    s.losses ASC,
+    (s.points_for - s.points_against) DESC,
+    s.team ASC
+  `;
   
   try {
     const standings = await queryAll(sql, params);

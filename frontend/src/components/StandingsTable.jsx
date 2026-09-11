@@ -7,6 +7,11 @@ export default function StandingsTable({ standings, league }) {
     Geral: 'Geral'
   }
 
+  const conferenceFullNames = {
+    AFC: 'American Football Conference',
+    NFC: 'National Football Conference'
+  }
+
   if (!standings || Object.keys(standings).length === 0) {
     return (
       <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
@@ -23,6 +28,11 @@ export default function StandingsTable({ standings, league }) {
       {Object.entries(standings).map(([conference, teams]) => (
         <div key={conference} className="conference-section">
           <h2>{conferenceLabels[conference] || conference}</h2>
+          {conferenceFullNames[conference] && (
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', margin: '0 0 8px 0' }}>
+              {conferenceFullNames[conference]}
+            </p>
+          )}
           <div className="table-container">
             <table>
               <thead>
@@ -40,14 +50,15 @@ export default function StandingsTable({ standings, league }) {
                 </tr>
               </thead>
               <tbody>
-                {teams.map((team, index) => {
-                  const rankClass = index === 0 ? 'top-1' : index === 1 ? 'top-2' : index === 2 ? 'top-3' : 'other'
+                {teams.map((team) => {
+                  const rank = Number(team.conference_rank) > 0 ? Number(team.conference_rank) : null
+                  const rankClass = rank === 1 ? 'top-1' : rank === 2 ? 'top-2' : rank === 3 ? 'top-3' : 'other'
                   const ptDiff = (team.points_for || 0) - (team.points_against || 0)
                   
                   return (
                     <tr key={team.id}>
                       <td>
-                        <span className={`rank-badge ${rankClass}`}>{index + 1}</span>
+                        <span className={`rank-badge ${rankClass}`}>{rank ?? '-'}</span>
                       </td>
                       <td>
                         <strong>{team.team}</strong>
