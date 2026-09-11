@@ -820,3 +820,137 @@ tr:hover td {
 .game-time::before {
   content: "🕐 ";
 }
+
+/* ---------- Results page ---------- */
+.results-section { margin-bottom: 32px; }
+.results-section-title { font-size: 1.2rem; margin-bottom: 16px; }
+
+/* ===== GameSummary modal (Fase 3) ===== */
+.game-card--clickable {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.game-card--clickable:hover,
+.game-card--clickable:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+  outline: none;
+}
+
+.summary-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 20, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.summary-modal {
+  background: var(--bg-card, #131624);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  color: var(--text-color, #f2f4ff);
+  width: min(720px, 100%);
+  max-height: 86vh;
+  overflow-y: auto;
+  padding: 22px 24px 28px;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.55);
+}
+
+.summary-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.summary-title {
+  font-size: 1.15rem;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.summary-league {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.nba .summary-league { background: #f8912e33; }
+.nfl .summary-league { background: #01336966; }
+
+.summary-close {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: inherit;
+  border-radius: 8px;
+  padding: 4px 9px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.summary-close:hover { background: rgba(255, 255, 255, 0.1); }
+
+.summary-status { margin: 10px 0 4px; font-weight: 600; font-size: 0.9rem; opacity: 0.95; }
+.summary-meta { margin: 0 0 6px; font-size: 0.85rem; opacity: 0.75; }
+
+.summary-loading { padding: 32px 0; text-align: center; opacity: 0.8; }
+.summary-empty { color: var(--text-muted, #9aa0b5); padding: 24px 0; }
+
+.summary-section { margin-top: 20px; }
+.summary-section-title { font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 10px; opacity: 0.9; }
+
+.summary-leader {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.summary-leader-photo { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+.summary-leader-info { display: flex; flex-direction: column; gap: 2px; }
+.summary-leader-name { font-weight: 700; }
+.summary-leader-position, .summary-leader-team { font-size: 0.82rem; opacity: 0.72; }
+.summary-leader-stats { list-style: none; display: flex; flex-wrap: wrap; gap: 10px 18px; padding: 0; margin: 8px 0 0; font-size: 0.85rem; }
+.summary-stat-label { opacity: 0.7; margin-right: 4px; }
+.summary-stat-value { font-weight: 700; }
+
+.summary-stats-group { margin-bottom: 16px; }
+.summary-stats-title { font-size: 0.85rem; margin: 0 0 8px; opacity: 0.8; }
+
+.summary-table-head, .summary-table-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 2fr) repeat(7, minmax(34px, 1fr));
+  gap: 4px;
+  font-size: 0.8rem;
+}
+.summary-table-head { font-weight: 700; opacity: 0.7; padding-bottom: 4px; }
+.summary-player-row { padding: 4px 0; border-top: 1px solid rgba(255, 255, 255, 0.06); }
+.summary-player { font-weight: 600; }
+
+.summary-group-items { display: flex; flex-direction: column; gap: 8px; }
+.summary-group-item {
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+}
+.summary-player-pos { font-size: 0.78rem; opacity: 0.7; margin-left: 8px; }
+.summary-group-stats { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 6px; font-size: 0.8rem; }
+.summary-stat-pair { white-space: nowrap; }
+.summary-stat-pair b { font-weight: 700; }
+
+.summary-position-note { font-size: 0.85rem; margin: 4px 0; opacity: 0.85; }
+
+@media (max-width: 560px) {
+  .summary-modal { padding: 16px; }
+  .summary-table-head, .summary-table-row { grid-template-columns: minmax(120px, 2fr) repeat(4, minmax(30px, 1fr)); }
+  .summary-table-row span:nth-child(n+6) { display: none; }
+}

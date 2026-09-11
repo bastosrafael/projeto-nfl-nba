@@ -12,6 +12,7 @@ function formatWeekDate(value) {
 
 export default function DashboardNBA() {
   const [games, setGames] = useState([])
+  const [recentGames, setRecentGames] = useState([])
   const [upcomingGames, setUpcomingGames] = useState([])
   const [standings, setStandings] = useState({})
   const [displayedWeek, setDisplayedWeek] = useState(null)
@@ -20,12 +21,14 @@ export default function DashboardNBA() {
   useEffect(() => {
     async function load() {
       try {
-        const [gamesRes, standingsRes, upcomingRes] = await Promise.all([
+        const [gamesRes, recentRes, standingsRes, upcomingRes] = await Promise.all([
           getGames({ league: 'NBA', limit: 20 }),
+          getGames({ league: 'NBA', status: 'final', limit: 6 }),
           getStandings('NBA'),
           getUpcomingGames({ league: 'NBA' })
         ])
         if (gamesRes.success) setGames(gamesRes.data || [])
+        if (recentRes.success) setRecentGames(recentRes.data || [])
         if (standingsRes.success) setStandings(standingsRes.data || {})
         if (upcomingRes.success) {
           setUpcomingGames(upcomingRes.data || [])
@@ -53,8 +56,8 @@ export default function DashboardNBA() {
     )
   }
 
-  const liveGames = games.filter(g => isLiveStatus(g.status))
-  const recentGames = games.filter(g => isFinalStatus(g.status)).sort((a, b) => new Date(b.game_date) - new Date(a.game_date)).slice(0, 6)
+  const liveGames = upcomingGames.filter(g => isLiveStatus(g.status))
+  const orderedRecentGames = recentGames.filter(g => isFinalStatus(g.status))
   
   // Estatísticas
   const totalTeams = Object.values(standings).flat().length
@@ -107,7 +110,7 @@ export default function DashboardNBA() {
       <section style={{ marginBottom: '32px' }}>
         <h2 style={{ marginBottom: '16px', fontSize: '1.2rem', fontWeight: 700 }}>Últimos Resultados</h2>
         <div className="games-grid">
-          {recentGames.length > 0 ? recentGames.map(game => (
+          {orderedRecentGames.length > 0 ? orderedRecentGames.map(game => (
             <GameCard key={game.id} game={game} />
           )) : (
             <p style={{ color: 'var(--text-muted)', gridColumn: '1/-1' }}>

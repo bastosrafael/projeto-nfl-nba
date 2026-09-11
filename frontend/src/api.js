@@ -33,6 +33,10 @@ export function getNFLSchedule(season) {
   return fetchApi(`/games/nfl/schedule${query}`);
 }
 
+export function getGameSummary(gameId) {
+  return fetchApi(`/games/${gameId}/summary`)
+}
+
 export function getStandings(league) {
   const query = league ? `?league=${league}` : '';
   return fetchApi(`/standings${query}`);

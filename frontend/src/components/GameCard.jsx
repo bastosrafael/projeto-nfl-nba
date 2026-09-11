@@ -31,14 +31,25 @@ function formatVenue(game) {
   return parts.join(' • ')
 }
 
-export default function GameCard({ game }) {
+export default function GameCard({ game, onSelect }) {
   const statusClass = getStatusClass(game.status)
   const statusLabel = STATUS_LABELS[game.status] || game.status || 'Agendado'
   const isFinal = statusClass === 'final'
   const isLive = statusClass === 'live'
+  const clickable = Boolean(isFinal && onSelect)
+
+  const handleClick = () => {
+    if (clickable) onSelect(game)
+  }
   
   return (
-    <div className="card game-card">
+    <div
+      className={`card game-card${clickable ? ' game-card--clickable' : ''}`}
+      onClick={handleClick}
+      role={clickable ? 'button' : undefined}
+      tabIndex={clickable ? 0 : undefined}
+      onKeyDown={clickable ? e => { if (e.key === 'Enter' || e.key === ' ') handleClick() } : undefined}
+    >
       <div className="game-header">
         <span className={`game-league ${game.league?.toLowerCase()}`}>
           {game.league}
@@ -67,12 +78,13 @@ export default function GameCard({ game }) {
         </div>
       </div>
       
-      {(game.venue || game.venue_city || game.venue_state || game.period || game.game_time) && (
+      {(game.venue || game.venue_city || game.venue_state || game.period || game.game_time || game.broadcast) && (
         <div className="game-info">
           {formatVenue(game) && <span className="game-venue">{formatVenue(game)}</span>}
           {((game.game_time || game.period) && (game.game_time || game.period) !== '0:00') && (
             <span className="game-time">{game.game_time || game.period}</span>
           )}
+          {game.broadcast && <span className="game-broadcast">📺 {game.broadcast}</span>}
         </div>
       )}
       <div className="game-date">

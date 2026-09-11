@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { queryAll } = require('../db/init');
+const { queryOne, queryAll } = require('../db/init');
+const { getGameSummary, NOT_AVAILABLE } = require('../services/gameSummaryService');
 
 function getBrazilDateString(date = new Date()) {
   const parts = Object.fromEntries(
@@ -32,11 +33,19 @@ function getWeekRangeForDate(dateString) {
   };
 }
 
-async function findScheduledGames(league, startDate, endDate, limit) {
+async function findUpcomingGames(league, startDate, endDate, limit) {
   const params = [startDate, endDate];
   let sql = `
     SELECT * FROM games
-    WHERE LOWER(status) LIKE '%scheduled%'
+    WHERE (
+        LOWER(status) LIKE '%scheduled%'
+        OR LOWER(status) LIKE '%progress%'
+        OR LOWER(status) LIKE '%live%'
+        OR LOWER(status) LIKE '%halftime%'
+      )
+      AND LOWER(status) NOT LIKE '%final%'
+      AND LOWER(status) NOT LIKE '%completed%'
+      AND LOWER(status) NOT LIKE '%post%'
       AND game_date BETWEEN ? AND ?
   `;
 
@@ -50,6 +59,47 @@ async function findScheduledGames(league, startDate, endDate, limit) {
   return queryAll(sql, params);
 }
 
+router.get('/:id/summary', async (req, res) => {
+  try {
+    const game = await queryOne('SELECT * FROM games WHERE id = ?', [req.params.id]);
+    if (!game) {
+      return res.status(404).json({ success: false, error: 'Jogo não encontrado.' });
+    }
+
+    const summary = await getGameSummary(game);
+    if (!summary) {
+      return res.json({
+        success: true,
+        data: {
+          game: {
+            id: game.id,
+            league: game.league,
+            home_team: game.home_team,
+            away_team: game.away_team,
+            home_score: game.home_score,
+            away_score: game.away_score
+          },
+          status: game.status || null,
+          status_final: false,
+          venue: game.venue || null,
+          broadcast: game.broadcast || null,
+          date: game.game_date || null,
+          time: game.game_time || null,
+          leader: null,
+          stats: [],
+          positionNotes: {},
+          available: false
+        }
+      });
+    }
+
+    res.json({ success: true, data: summary });
+  } catch (error) {
+    console.error('[games] Erro em /summary:', error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 router.get('/', async (req, res) => {
   const { league, status, date } = req.query;
   const limit = Math.max(1, Math.min(100, parseInt(req.query.limit) || 50));
@@ -62,15 +112,24 @@ router.get('/', async (req, res) => {
     params.push(league.toUpperCase());
   }
   if (status) {
-    sql += ' AND status = ?';
-    params.push(status);
+    const normalizedStatus = status.toLowerCase();
+    if (normalizedStatus === 'final') {
+      sql += ` AND (
+        LOWER(status) LIKE '%final%'
+        OR LOWER(status) LIKE '%completed%'
+        OR LOWER(status) LIKE '%post%'
+      )`;
+    } else {
+      sql += ' AND status = ?';
+      params.push(status);
+    }
   }
   if (date) {
     sql += ' AND game_date = ?';
     params.push(date);
   }
   
-  sql += ' ORDER BY game_date DESC, id DESC LIMIT ?';
+  sql += ' ORDER BY game_date DESC, game_time DESC, id DESC LIMIT ?';
   params.push(limit);
   
   try {
@@ -176,7 +235,7 @@ router.get('/upcoming', async (req, res) => {
     const today = getBrazilDateString();
     let { startDate, endDate } = getWeekRangeForDate(today);
     let mode = 'current';
-    let games = await findScheduledGames(league, startDate, endDate, limit);
+    let games = await findUpcomingGames(league, startDate, endDate, limit);
 
     if (games.length === 0 && league) {
       const firstRows = await queryAll(`
@@ -189,7 +248,7 @@ router.get('/upcoming', async (req, res) => {
 
       if (firstDate && today < firstDate) {
         ({ startDate, endDate } = getWeekRangeForDate(firstDate));
-        games = await findScheduledGames(league, startDate, endDate, limit);
+        games = await findUpcomingGames(league, startDate, endDate, limit);
         mode = 'first_scheduled';
       }
     }

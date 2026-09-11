@@ -11,7 +11,8 @@ export function isLiveStatus(status) {
 }
 
 export function isFinalStatus(status) {
-  return String(status || '').toLowerCase().includes('final')
+  const normalized = String(status || '').toLowerCase()
+  return normalized.includes('final') || normalized.includes('completed') || normalized.includes('post')
 }
 
 export function isScheduledStatus(status) {

@@ -237,7 +237,8 @@ function extractGames(scoreboardData) {
         game_date: date,
         venue: comp.venue?.fullName || '',
         venue_city: comp.venue?.address?.city || '',
-        venue_state: comp.venue?.address?.state || ''
+        venue_state: comp.venue?.address?.state || '',
+        broadcast: comp.broadcasts?.[0]?.names?.join(', ') || ''
       });
     }
   } catch (error) {

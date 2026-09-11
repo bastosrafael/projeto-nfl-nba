@@ -73,8 +73,8 @@ async function syncNBA() {
       const homeTeamId = leagueTeamId('NBA', g.home_team_id);
       const awayTeamId = leagueTeamId('NBA', g.away_team_id);
       await run(`INSERT INTO games (id, league, home_team_id, away_team_id, home_team, away_team,
-        home_score, away_score, status, period, game_date, game_time, venue, venue_city, venue_state, updated_at)
-        VALUES (?, 'NBA', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        home_score, away_score, status, period, game_date, game_time, venue, venue_city, venue_state, broadcast, updated_at)
+        VALUES (?, 'NBA', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
         ON CONFLICT (id) DO UPDATE SET
           league = excluded.league,
           home_team_id = excluded.home_team_id,
@@ -90,11 +90,13 @@ async function syncNBA() {
           venue = excluded.venue,
           venue_city = excluded.venue_city,
           venue_state = excluded.venue_state,
+          broadcast = excluded.broadcast,
           updated_at = CURRENT_TIMESTAMP`, [
         g.id, homeTeamId || null, awayTeamId || null,
         g.home_team || 'Time Casa', g.away_team || 'Time Fora',
         g.home_score || 0, g.away_score || 0,
-        g.status || 'STATUS_SCHEDULED', g.period?.toString() || '', g.game_date, g.game_time, g.venue || '', g.venue_city || '', g.venue_state || ''
+        g.status || 'STATUS_SCHEDULED', g.period?.toString() || '', g.game_date, g.game_time, g.venue || '', g.venue_city || '', g.venue_state || '',
+        g.broadcast || ''
       ]);
     }
     console.log(`[Sync] NBA: ${nbaGameRows.length} jogos`);
@@ -153,8 +155,8 @@ async function syncNFL() {
       const awayTeamId = leagueTeamId('NFL', g.away_team_id);
       await run(`INSERT INTO games (id, league, home_team_id, away_team_id, home_team, away_team,
         home_score, away_score, status, period, game_date, game_time, season_year, season_type, season_week,
-        venue, venue_city, venue_state, updated_at)
-        VALUES (?, 'NFL', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        venue, venue_city, venue_state, broadcast, updated_at)
+        VALUES (?, 'NFL', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
         ON CONFLICT (id) DO UPDATE SET
           league = excluded.league,
           home_team_id = excluded.home_team_id,
@@ -173,11 +175,12 @@ async function syncNFL() {
           venue = excluded.venue,
           venue_city = excluded.venue_city,
           venue_state = excluded.venue_state,
+          broadcast = excluded.broadcast,
           updated_at = CURRENT_TIMESTAMP`, [
         g.id, homeTeamId || null, awayTeamId || null,
         g.home_team, g.away_team, g.home_score, g.away_score,
         g.status, g.period, g.game_date, g.game_time, g.season_year, g.season_type, g.season_week,
-        g.venue, g.venue_city || '', g.venue_state || ''
+        g.venue, g.venue_city || '', g.venue_state || '', g.broadcast || ''
       ]);
     }
     console.log(`[Sync] NFL: ${nflGames.length} jogos`);

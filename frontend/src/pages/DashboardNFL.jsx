@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import GameCard from '../components/GameCard'
-import { getGames, getNFLSchedule, getStandings, getUpcomingGames } from '../api'
+import { getGames, getStandings, getNFLSchedule } from '../api'
 import { isFinalStatus, isLiveStatus } from '../utils/gameStatus'
 
 export default function DashboardNFL() {
   const [games, setGames] = useState([])
-  const [upcomingGames, setUpcomingGames] = useState([])
-  const [scheduleWeeks, setScheduleWeeks] = useState([])
+  const [recentGames, setRecentGames] = useState([])
+  const [schedule, setSchedule] = useState([])
   const [scheduleSeason, setScheduleSeason] = useState(null)
   const [standings, setStandings] = useState({})
   const [loading, setLoading] = useState(true)
@@ -15,17 +15,23 @@ export default function DashboardNFL() {
   useEffect(() => {
     async function load() {
       try {
-        const [gamesRes, standingsRes, upcomingRes, scheduleRes] = await Promise.all([
+        const [gamesRes, recentRes, standingsRes, scheduleRes] = await Promise.all([
           getGames({ league: 'NFL', limit: 20 }),
+          getGames({ league: 'NFL', status: 'final', limit: 6 }),
           getStandings('NFL'),
-          getUpcomingGames({ league: 'NFL' }),
           getNFLSchedule()
         ])
         if (gamesRes.success) setGames(gamesRes.data || [])
+        if (recentRes.success) setRecentGames(recentRes.data || [])
         if (standingsRes.success) setStandings(standingsRes.data || {})
-        if (upcomingRes.success) setUpcomingGames(upcomingRes.data || [])
         if (scheduleRes.success) {
-          setScheduleWeeks(scheduleRes.data || [])
+          const weeks = (scheduleRes.data || [])
+            .map(week => ({
+              ...week,
+              games: (week.games || []).filter(game => !isFinalStatus(game.status))
+            }))
+            .filter(week => week.games.length > 0)
+          setSchedule(weeks)
           setScheduleSeason(scheduleRes.season || null)
         }
       } catch (err) {
@@ -48,8 +54,12 @@ export default function DashboardNFL() {
     )
   }
 
-  const liveGames = games.filter(g => isLiveStatus(g.status))
-  const recentGames = games.filter(g => isFinalStatus(g.status)).sort((a, b) => new Date(b.game_date) - new Date(a.game_date)).slice(0, 6)
+  const liveGames = schedule
+    .flatMap(week => week.games)
+    .filter(game => isLiveStatus(game.status))
+  const orderedRecentGames = recentGames.filter(g => isFinalStatus(g.status))
+  const scheduleWeeks = schedule
+  const upcomingCount = scheduleWeeks.reduce((total, week) => total + week.games.length, 0)
   
   const totalTeams = Object.values(standings).flat().length
 
@@ -81,7 +91,7 @@ export default function DashboardNFL() {
         </div>
         <div className="stat-card">
           <span className="stat-label">Jogos na Semana</span>
-          <span className="stat-value nfl">{upcomingGames.length}</span>
+          <span className="stat-value nfl">{upcomingCount}</span>
         </div>
       </div>
 
@@ -101,7 +111,7 @@ export default function DashboardNFL() {
       <section style={{ marginBottom: '32px' }}>
         <h2 style={{ marginBottom: '16px', fontSize: '1.2rem', fontWeight: 700 }}>Últimos Resultados</h2>
         <div className="games-grid">
-          {recentGames.length > 0 ? recentGames.map(game => (
+          {orderedRecentGames.length > 0 ? orderedRecentGames.map(game => (
             <GameCard key={game.id} game={game} />
           )) : (
             <p style={{ color: 'var(--text-muted)', gridColumn: '1/-1' }}>

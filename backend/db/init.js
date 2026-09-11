@@ -74,6 +74,7 @@ function initTables() {
   ensureColumn('games', 'season_year INTEGER');
   ensureColumn('games', 'season_type INTEGER');
   ensureColumn('games', 'season_week INTEGER');
+  ensureColumn('games', 'broadcast TEXT');
 
   db.run(`
     CREATE TABLE IF NOT EXISTS nfl_schedule_weeks (
@@ -172,6 +173,23 @@ async function queryOne(sql, params = []) {
   return rows.length > 0 ? rows[0] : null;
 }
 
-const sqliteAdapter = { getDb, run, logSync, getSyncLogs, queryAll, queryOne, saveDb };
+async function transaction(callback) {
+  if (typeof callback !== 'function') {
+    throw new TypeError('transaction requer uma função callback.');
+  }
+
+  const database = await getDb();
+  database.run('BEGIN IMMEDIATE');
+  try {
+    const result = await callback({ run, queryAll, queryOne });
+    database.run('COMMIT');
+    return result;
+  } catch (error) {
+    database.run('ROLLBACK');
+    throw error;
+  }
+}
+
+const sqliteAdapter = { getDb, run, logSync, getSyncLogs, queryAll, queryOne, transaction, saveDb };
 
 module.exports = postgresEnabled ? postgresAdapter : sqliteAdapter;
