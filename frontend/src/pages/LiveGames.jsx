@@ -80,7 +80,7 @@ export default function LiveGames() {
           <h1>Jogos de Hoje</h1>
           <p className="subtitle">Jogos NBA e NFL de hoje, no horario de Sao Paulo</p>
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div className="page-header-badges">
           <span className="status-badge live">🔴 {liveGames.length} ao vivo</span>
           <span className="status-badge scheduled">📅 {upcomingGames.length} agendados</span>
           <span className="status-badge final">✅ {recentGames.length} finalizados</span>
@@ -111,7 +111,7 @@ export default function LiveGames() {
           ))}
         </div>
       ) : (
-        <div className="card" style={{ textAlign: 'center', padding: '60px' }}>
+        <div className="card empty-state" style={{ textAlign: 'center', padding: '60px' }}>
           <p style={{ fontSize: '1.2rem', marginBottom: '8px' }}>🏀🏈</p>
           <p style={{ color: 'var(--text-muted)' }}>
             Nenhum jogo NBA ou NFL hoje.

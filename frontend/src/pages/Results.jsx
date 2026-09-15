@@ -26,7 +26,7 @@ function FinalGamesSection({ league, games, loading, onOpenSummary }) {
           ))}
         </div>
       ) : (
-        <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
+        <div className="card empty-state" style={{ textAlign: 'center', padding: '40px' }}>
           <p style={{ color: 'var(--text-muted)' }}>
             Nenhum resultado disponível no momento.
           </p>

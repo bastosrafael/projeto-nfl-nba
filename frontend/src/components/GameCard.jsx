@@ -38,6 +38,8 @@ export default function GameCard({ game, onSelect }) {
   const statusLabel = STATUS_LABELS[game.status] || game.status || 'Agendado'
   const isFinal = statusClass === 'final'
   const isLive = statusClass === 'live'
+  const awayScoreEmpty = !game.away_score && !isFinal
+  const homeScoreEmpty = !game.home_score && !isFinal
   const clickable = Boolean(isFinal && onSelect)
 
   const handleClick = () => {
@@ -63,21 +65,25 @@ export default function GameCard({ game, onSelect }) {
       </div>
       
       <div className="teams">
-        <div className="team">
-          <TeamLogo sport={game.league} name={game.away_team} />
-          <span className="team-name">{game.away_team}</span>
-          <span className={`team-score ${isFinal && game.away_score > game.home_score ? 'winner' : ''}`}>
-            {game.away_score || (isFinal ? 0 : '-')}
+        <div className="team team--home">
+          <div className="team-content team-content-home">
+            <TeamLogo sport={game.league} name={game.home_team} />
+            <span className="team-name">{game.home_team}</span>
+          </div>
+          <span className={`team-score${homeScoreEmpty ? ' team-score--empty' : ''}${isFinal && game.home_score > game.away_score ? ' winner' : ''}`}>
+            {game.home_score || (isFinal ? 0 : '-')}
           </span>
         </div>
         <div className="vs">
-          {isLive ? 'VS' : (isFinal ? '×' : 'VS')}
+          VS
         </div>
-        <div className="team">
-          <TeamLogo sport={game.league} name={game.home_team} />
-          <span className="team-name">{game.home_team}</span>
-          <span className={`team-score ${isFinal && game.home_score > game.away_score ? 'winner' : ''}`}>
-            {game.home_score || (isFinal ? 0 : '-')}
+        <div className="team team--away">
+          <div className="team-content team-content-away">
+            <TeamLogo sport={game.league} name={game.away_team} />
+            <span className="team-name">{game.away_team}</span>
+          </div>
+          <span className={`team-score${awayScoreEmpty ? ' team-score--empty' : ''}${isFinal && game.away_score > game.home_score ? ' winner' : ''}`}>
+            {game.away_score || (isFinal ? 0 : '-')}
           </span>
         </div>
       </div>

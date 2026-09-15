@@ -18,7 +18,11 @@ const NBA_TEAMS = {
   'milwaukee bucks': 'MIL',
   'minnesota timberwolves': 'MIN',
   'new orleans pelicans': 'NO',
+  'new orleans oklahoma city pelicans': 'NO',
   'new york knicks': 'NYK',
+  'la clippers': 'LAC',
+  'philadelphia sixers': 'PHI',
+  'portland trailblazers': 'POR',
   'oklahoma city thunder': 'OKC',
   'orlando magic': 'ORL',
   'philadelphia 76ers': 'PHI',
@@ -49,8 +53,12 @@ const NFL_TEAMS = {
   'jacksonville jaguars': 'JAX',
   'kansas city chiefs': 'KC',
   'las vegas raiders': 'LV',
+  'oakland raiders': 'LV',
+  'la chargers': 'LAC',
+  'la rams': 'LAR',
   'los angeles chargers': 'LAC',
   'los angeles rams': 'LAR',
+  'new york football giants': 'NYG',
   'miami dolphins': 'MIA',
   'minnesota vikings': 'MIN',
   'new england patriots': 'NE',
@@ -64,6 +72,8 @@ const NFL_TEAMS = {
   'tampa bay buccaneers': 'TB',
   'tennessee titans': 'TEN',
   'washington commanders': 'WAS',
+  'washington redskins': 'WAS',
+  'washington football team': 'WAS',
 }
 
 const MAPS = {

@@ -151,9 +151,21 @@ export default function GameSummary({ game, onClose }) {
           <h2 className="summary-title">
             <span className="summary-league">{game.league}</span>
             <span className="summary-title-teams">
-              <TeamLogo sport={game.league} name={game.away_team} />
-              {game.away_team} {game.away_score ?? '-'} × {game.home_score ?? '-'} {game.home_team}
-              <TeamLogo sport={game.league} name={game.home_team} />
+              <span className="summary-team-group">
+                <TeamLogo sport={game.league} name={game.away_team} />
+                <span className="summary-team-name">{game.away_team}</span>
+                <span className="summary-team-score">
+                  {game.away_score ?? <span className="summary-score-empty">-</span>}
+                </span>
+              </span>
+              <span className="summary-vs">VS</span>
+              <span className="summary-team-group">
+                <span className="summary-team-score">
+                  {game.home_score ?? <span className="summary-score-empty">-</span>}
+                </span>
+                <span className="summary-team-name">{game.home_team}</span>
+                <TeamLogo sport={game.league} name={game.home_team} />
+              </span>
             </span>
           </h2>
           <button type="button" className="summary-close" onClick={onClose} aria-label="Fechar">

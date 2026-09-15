@@ -179,23 +179,39 @@ export default function Home() {
 
       <div className="stats-grid">
         <div className="stat-card">
-          <span className="stat-label">Jogos de Hoje</span>
+          <span className="stat-icon">📅</span>
+          <span className="stat-label">
+            <span className="label-full">Jogos de Hoje</span>
+            <span className="label-short">Jogos</span>
+          </span>
           <span className="stat-value" style={{ color: 'var(--accent-blue)' }}>
             {todayCount}
           </span>
         </div>
         <div className="stat-card">
-          <span className="stat-label">Ao Vivo</span>
+          <span className="stat-icon">🔴</span>
+          <span className="stat-label">
+            <span className="label-full">Ao Vivo</span>
+            <span className="label-short">Ao Vivo</span>
+          </span>
           <span className="stat-value" style={{ color: liveCount > 0 ? 'var(--error)' : 'var(--text-muted)' }}>
             {liveCount || '0'}
           </span>
         </div>
         <div className="stat-card">
-          <span className="stat-label">NBA Hoje</span>
+          <span className="stat-icon">🏀</span>
+          <span className="stat-label">
+            <span className="label-full">NBA Hoje</span>
+            <span className="label-short">NBA</span>
+          </span>
           <span className="stat-value nba">{nbaGames.length} jogos</span>
         </div>
         <div className="stat-card">
-          <span className="stat-label">NFL Hoje</span>
+          <span className="stat-icon">🏈</span>
+          <span className="stat-label">
+            <span className="label-full">NFL Hoje</span>
+            <span className="label-short">NFL</span>
+          </span>
           <span className="stat-value nfl">{nflGames.length} jogos</span>
         </div>
       </div>
@@ -221,7 +237,7 @@ export default function Home() {
       <section style={{ marginBottom: '40px' }}>
         <div className="section-header">
           <div>
-            <h2 className="section-title">NBA</h2>
+            <h2 className="section-title"><span className="section-title-icon">🏀 </span>NBA</h2>
             <p className="section-subtitle">National Basketball Association</p>
           </div>
           <div className="section-actions">
@@ -259,8 +275,9 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          <div className="card" style={{ marginBottom: '20px', textAlign: 'center', padding: '32px' }}>
+          <div className="card empty-state" style={{ marginBottom: '20px', textAlign: 'center', padding: '32px' }}>
             <p style={{ fontSize: '1.1rem', marginBottom: '8px' }}>
+              <span className="empty-state-icon">🏀 </span>
               {nbaError
                 ? nbaError
                 : refreshing
@@ -290,7 +307,7 @@ export default function Home() {
       <section style={{ marginBottom: '40px' }}>
         <div className="section-header">
           <div>
-            <h2 className="section-title">NFL</h2>
+            <h2 className="section-title"><span className="section-title-icon">🏈 </span>NFL</h2>
             <p className="section-subtitle">National Football League</p>
           </div>
           <div className="section-actions">
@@ -328,8 +345,9 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          <div className="card" style={{ marginBottom: '20px', textAlign: 'center', padding: '32px' }}>
+          <div className="card empty-state" style={{ marginBottom: '20px', textAlign: 'center', padding: '32px' }}>
             <p style={{ fontSize: '1.1rem', marginBottom: '8px' }}>
+              <span className="empty-state-icon">🏈 </span>
               {refreshing ? 'Atualizando jogos NFL...' : 'Sem jogos NFL hoje'}
             </p>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
