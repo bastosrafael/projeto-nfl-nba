@@ -1,3 +1,5 @@
+import TeamLogo from './TeamLogo'
+
 export default function StandingsTable({ standings, league }) {
   const conferenceLabels = {
     Eastern: 'Leste',
@@ -61,7 +63,10 @@ export default function StandingsTable({ standings, league }) {
                         <span className={`rank-badge ${rankClass}`}>{rank ?? '-'}</span>
                       </td>
                       <td>
-                        <strong>{team.team}</strong>
+                        <div className="standings-team">
+                          <TeamLogo sport={league} name={team.team} />
+                          <strong>{team.team}</strong>
+                        </div>
                       </td>
                       <td>{team.games_played}</td>
                       <td style={{ color: 'var(--success)' }}>{team.wins}</td>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import GameCard from '../components/GameCard'
 import { getGames, getStandings, getUpcomingGames } from '../api'
@@ -17,8 +17,13 @@ export default function DashboardNBA() {
   const [standings, setStandings] = useState({})
   const [displayedWeek, setDisplayedWeek] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const allLoaded = useRef(false)
 
   useEffect(() => {
+    let cancelled = false
+    let retryTimer = null
+
     async function load() {
       try {
         const [gamesRes, recentRes, standingsRes, upcomingRes] = await Promise.all([
@@ -27,6 +32,7 @@ export default function DashboardNBA() {
           getStandings('NBA'),
           getUpcomingGames({ league: 'NBA' })
         ])
+        if (cancelled) return
         if (gamesRes.success) setGames(gamesRes.data || [])
         if (recentRes.success) setRecentGames(recentRes.data || [])
         if (standingsRes.success) setStandings(standingsRes.data || {})
@@ -34,24 +40,46 @@ export default function DashboardNBA() {
           setUpcomingGames(upcomingRes.data || [])
           setDisplayedWeek(upcomingRes.week || null)
         }
+        const failed = [gamesRes, recentRes, standingsRes, upcomingRes].some(r => !r.success)
+        if (failed) throw new Error('Falha ao buscar dados da NBA')
+        setError(null)
+        setLoading(false)
+        allLoaded.current = true
       } catch (err) {
         console.error(err)
-      } finally {
-        setLoading(false)
+        if (cancelled) return
+        if (!allLoaded.current) {
+          setError('Não foi possível carregar os jogos. Tentando novamente...')
+          retryTimer = setTimeout(load, 3000)
+        }
       }
     }
     load()
-    
+
     // Auto refresh a cada 30s
     const interval = setInterval(load, 30000)
-    return () => clearInterval(interval)
+    return () => {
+      cancelled = true
+      clearInterval(interval)
+      if (retryTimer) clearTimeout(retryTimer)
+    }
   }, [])
 
   if (loading) {
     return (
       <div className="loading">
         <div className="loading-spinner" />
-        <span className="loading-text">Carregando dados da NBA...</span>
+        <span className="loading-text">Carregando jogos...</span>
+      </div>
+    )
+  }
+
+  if (error && games.length === 0 && recentGames.length === 0 && upcomingGames.length === 0) {
+    return (
+      <div className="loading">
+        <div className="loading-spinner" />
+        <span className="loading-text">Carregando jogos...</span>
+        <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{error}</span>
       </div>
     )
   }

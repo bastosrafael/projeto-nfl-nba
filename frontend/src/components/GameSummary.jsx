@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { getGameSummary } from '../api'
 import { isFinalStatus } from '../utils/gameStatus'
+import TeamLogo from './TeamLogo'
+import StatsGlossary from './StatsGlossary'
 
 const NOT_AVAILABLE = 'Não disponível'
 
@@ -148,7 +150,11 @@ export default function GameSummary({ game, onClose }) {
         <header className="summary-header">
           <h2 className="summary-title">
             <span className="summary-league">{game.league}</span>
-            {game.away_team} {game.away_score ?? '-'} × {game.home_score ?? '-'} {game.home_team}
+            <span className="summary-title-teams">
+              <TeamLogo sport={game.league} name={game.away_team} />
+              {game.away_team} {game.away_score ?? '-'} × {game.home_score ?? '-'} {game.home_team}
+              <TeamLogo sport={game.league} name={game.home_team} />
+            </span>
           </h2>
           <button type="button" className="summary-close" onClick={onClose} aria-label="Fechar">
             ✕
@@ -177,6 +183,7 @@ export default function GameSummary({ game, onClose }) {
               <>
                 <LeaderSection leader={summary.leader} />
                 <StatsSection stats={summary.stats} league={game.league} />
+                {game.league === 'NFL' && <StatsGlossary gameLeague={game.league} />}
                 {summary.positionNotes && Object.keys(summary.positionNotes).length > 0 && (
                   <section className="summary-section">
                     <h3 className="summary-section-title">Notas de posição</h3>

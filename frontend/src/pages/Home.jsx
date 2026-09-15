@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import GameCard from '../components/GameCard'
 import { getGames, getLiveGames, getUpcomingGames } from '../api'
@@ -29,35 +29,93 @@ export default function Home() {
   const [nbaUpcomingGames, setNbaUpcomingGames] = useState([])
   const [nflUpcomingGames, setNflUpcomingGames] = useState([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+  const [nbaError, setNbaError] = useState(null)
+  const cancelledRef = useRef(false)
+  const retryTimerRef = useRef(null)
+  const attemptRef = useRef(0)
+  const emptyRetryRef = useRef(0)
+  const dataReadyRef = useRef(false)
   const todayDate = getSaoPauloDateString()
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const [nbaRes, nflRes, liveRes, nbaUpcomingRes, nflUpcomingRes] = await Promise.all([
-          getGames({ league: 'NBA', date: todayDate, limit: 100 }),
-          getGames({ league: 'NFL', date: todayDate, limit: 100 }),
-          getLiveGames(),
-          getUpcomingGames({ league: 'NBA' }),
-          getUpcomingGames({ league: 'NFL' })
-        ])
+  const finishFirstLoad = useCallback(() => {
+    dataReadyRef.current = true
+    setLoading(false)
+  }, [])
 
-        if (nbaRes.success) setNbaGames(nbaRes.data || [])
-        if (nflRes.success) setNflGames(nflRes.data || [])
-        if (liveRes.success) setLiveGames(liveRes.data || [])
-        if (nbaUpcomingRes.success) setNbaUpcomingGames(nbaUpcomingRes.data || [])
-        if (nflUpcomingRes.success) setNflUpcomingGames(nflUpcomingRes.data || [])
-      } catch (err) {
-        console.error(err)
-      } finally {
-        setLoading(false)
+  const fetchAll = useCallback(async () => {
+    try {
+      const [nbaRes, nflRes, liveRes, nbaUpcomingRes, nflUpcomingRes] = await Promise.all([
+        getGames({ league: 'NBA', date: todayDate, limit: 100 }),
+        getGames({ league: 'NFL', date: todayDate, limit: 100 }),
+        getLiveGames(),
+        getUpcomingGames({ league: 'NBA' }),
+        getUpcomingGames({ league: 'NFL' })
+      ])
+      if (cancelledRef.current) return
+
+      if (nflRes.success) setNflGames(nflRes.data || [])
+      if (liveRes.success) setLiveGames(liveRes.data || [])
+      if (nbaUpcomingRes.success) setNbaUpcomingGames(nbaUpcomingRes.data || [])
+      if (nflUpcomingRes.success) setNflUpcomingGames(nflUpcomingRes.data || [])
+
+      if (!nbaRes.success) {
+        throw new Error(nbaRes.error || 'Falha ao buscar jogos NBA de hoje')
+      }
+
+      const games = nbaRes.data || []
+
+      setNbaGames(games)
+      setNbaError(null)
+      attemptRef.current = 0
+
+      const firstLoadCold = !dataReadyRef.current && emptyRetryRef.current < 2
+      if (games.length === 0 && firstLoadCold) {
+        emptyRetryRef.current++
+        retryTimerRef.current = setTimeout(fetchAll, 2000 * emptyRetryRef.current)
+        return
+      }
+
+      finishFirstLoad()
+    } catch (err) {
+      console.error(err)
+      if (cancelledRef.current) return
+      if (attemptRef.current < 3) {
+        attemptRef.current++
+        setNbaError(
+          `Não foi possível carregar os jogos NBA. Nova tentativa (${attemptRef.current}/3) em andamento...`
+        )
+        retryTimerRef.current = setTimeout(fetchAll, 2000 * attemptRef.current)
+      } else {
+        setNbaError('Não foi possível carregar os jogos NBA. Verifique a conexão e use "Atualizar jogos".')
       }
     }
+  }, [todayDate, finishFirstLoad])
 
-    load()
-    const interval = setInterval(load, 30000)
-    return () => clearInterval(interval)
-  }, [todayDate])
+  useEffect(() => {
+    cancelledRef.current = false
+    attemptRef.current = 0
+    emptyRetryRef.current = 0
+    fetchAll()
+
+    const interval = setInterval(fetchAll, 30000)
+    return () => {
+      cancelledRef.current = true
+      clearInterval(interval)
+      if (retryTimerRef.current) clearTimeout(retryTimerRef.current)
+    }
+  }, [fetchAll])
+
+  const handleRefresh = useCallback(async () => {
+    if (refreshing) return
+    setRefreshing(true)
+    attemptRef.current = 0
+    try {
+      await fetchAll()
+    } finally {
+      if (!cancelledRef.current) setRefreshing(false)
+    }
+  }, [fetchAll, refreshing])
 
   const nbaLive = liveGames.filter(game => game.league === 'NBA')
   const nflLive = liveGames.filter(game => game.league === 'NFL')
@@ -74,7 +132,12 @@ export default function Home() {
     return (
       <div className="loading">
         <div className="loading-spinner" />
-        <span className="loading-text">Carregando...</span>
+        <span className="loading-text">
+          {refreshing ? 'Atualizando jogos...' : 'Carregando jogos NBA...'}
+        </span>
+        {nbaError && (
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{nbaError}</span>
+        )}
       </div>
     )
   }
@@ -98,6 +161,20 @@ export default function Home() {
             </Link>
           </div>
         </div>
+      </div>
+
+      <div
+        className="section-actions"
+        style={{ justifyContent: 'flex-end', marginBottom: '16px' }}
+      >
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={handleRefresh}
+          disabled={refreshing}
+        >
+          {refreshing ? 'Atualizando...' : 'Atualizar jogos'}
+        </button>
       </div>
 
       <div className="stats-grid">
@@ -183,9 +260,19 @@ export default function Home() {
           </div>
         ) : (
           <div className="card" style={{ marginBottom: '20px', textAlign: 'center', padding: '32px' }}>
-            <p style={{ fontSize: '1.1rem', marginBottom: '8px' }}>Sem jogos NBA hoje</p>
+            <p style={{ fontSize: '1.1rem', marginBottom: '8px' }}>
+              {nbaError
+                ? nbaError
+                : refreshing
+                  ? 'Atualizando jogos NBA...'
+                  : 'Sem jogos NBA hoje'}
+            </p>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-              Quando houver jogos no dia, eles aparecem aqui.
+              {nbaError
+                ? 'Nova tentativa automática em andamento. Você também pode usar o botão "Atualizar jogos".'
+                : refreshing
+                  ? 'Buscando as informações mais recentes...'
+                  : 'Quando houver jogos no dia, eles aparecem aqui.'}
             </p>
           </div>
         )}
@@ -242,9 +329,13 @@ export default function Home() {
           </div>
         ) : (
           <div className="card" style={{ marginBottom: '20px', textAlign: 'center', padding: '32px' }}>
-            <p style={{ fontSize: '1.1rem', marginBottom: '8px' }}>Sem jogos NFL hoje</p>
+            <p style={{ fontSize: '1.1rem', marginBottom: '8px' }}>
+              {refreshing ? 'Atualizando jogos NFL...' : 'Sem jogos NFL hoje'}
+            </p>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-              Quando houver jogos no dia, eles aparecem aqui.
+              {refreshing
+                ? 'Buscando as informações mais recentes...'
+                : 'Quando houver jogos no dia, eles aparecem aqui.'}
             </p>
           </div>
         )}

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import GameCard from '../components/GameCard'
 import { getGames, getStandings, getNFLSchedule } from '../api'
 import { isFinalStatus, isLiveStatus } from '../utils/gameStatus'
+import StatsGlossary from '../components/StatsGlossary'
 
 export default function DashboardNFL() {
   const [games, setGames] = useState([])
@@ -93,6 +94,10 @@ export default function DashboardNFL() {
           <span className="stat-label">Jogos na Semana</span>
           <span className="stat-value nfl">{upcomingCount}</span>
         </div>
+      </div>
+
+      <div style={{ margin: '16px 0 32px' }}>
+        <StatsGlossary gameLeague="NFL" />
       </div>
 
       {/* Live */}

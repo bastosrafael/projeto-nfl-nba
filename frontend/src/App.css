@@ -204,6 +204,57 @@ body {
   text-align: center;
 }
 
+.game-card .team-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.team-logo--fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+  background: var(--bg-card, #1e2430);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  color: var(--text-muted, #8b93a7);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  object-fit: contain;
+}
+
+.summary-title-teams {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.summary-title .team-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.standings-team {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.standings-team .team-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .game-card .team-score {
   font-size: 2rem;
   font-weight: 800;
@@ -354,6 +405,17 @@ body {
 
 .table-container table {
   min-width: 760px;
+  table-layout: fixed;
+}
+
+.table-container th:nth-child(1),
+.table-container td:nth-child(1) {
+  width: 60px;
+}
+
+.table-container th:nth-child(2),
+.table-container td:nth-child(2) {
+  width: 32%;
 }
 
 table {
@@ -629,6 +691,11 @@ tr:hover td {
 
   .game-card .team-name {
     font-size: 0.8rem;
+  }
+
+  .game-card .team-logo {
+    width: 28px;
+    height: 28px;
   }
 
   .game-card .team-score {
@@ -953,4 +1020,99 @@ tr:hover td {
   .summary-modal { padding: 16px; }
   .summary-table-head, .summary-table-row { grid-template-columns: minmax(120px, 2fr) repeat(4, minmax(30px, 1fr)); }
   .summary-table-row span:nth-child(n+6) { display: none; }
+}
+
+/* Stats Glossary NFL */
+.stats-glossary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.stats-glossary-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.stats-glossary-overlay { z-index: 300; }
+
+.stats-glossary-modal {
+  max-width: 560px;
+  width: calc(100vw - 32px);
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.stats-glossary-header { margin-bottom: 8px; }
+
+.stats-glossary-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.stats-glossary-intro {
+  font-size: 0.85rem;
+  color: var(--text-muted, #9aa0b5);
+  margin-bottom: 14px;
+}
+
+.stats-glossary-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stats-glossary-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+  align-items: flex-start;
+}
+
+.stats-glossary-abbrev {
+  flex-shrink: 0;
+  min-width: 52px;
+  text-align: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #01336966;
+  color: var(--accent-nfl, #00e676);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.stats-glossary-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.85rem;
+}
+.stats-glossary-text b { font-weight: 700; }
+.stats-glossary-text span { color: var(--text-secondary, #94a3b8); }
+.stats-glossary-text .stats-glossary-example {
+  color: var(--text-muted, #9aa0b5);
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+@media (max-width: 560px) {
+  .stats-glossary-item { flex-direction: column; gap: 6px; padding: 10px; }
+  .stats-glossary-abbrev { min-width: 0; align-self: flex-start; }
+  .stats-glossary-btn { width: 100%; justify-content: center; }
 }

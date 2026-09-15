@@ -1,3 +1,5 @@
+import TeamLogo from './TeamLogo'
+
 const STATUS_LABELS = {
   'Final': 'Final',
   'STATUS_FINAL': 'Final',
@@ -62,6 +64,7 @@ export default function GameCard({ game, onSelect }) {
       
       <div className="teams">
         <div className="team">
+          <TeamLogo sport={game.league} name={game.away_team} />
           <span className="team-name">{game.away_team}</span>
           <span className={`team-score ${isFinal && game.away_score > game.home_score ? 'winner' : ''}`}>
             {game.away_score || (isFinal ? 0 : '-')}
@@ -71,6 +74,7 @@ export default function GameCard({ game, onSelect }) {
           {isLive ? 'VS' : (isFinal ? '×' : 'VS')}
         </div>
         <div className="team">
+          <TeamLogo sport={game.league} name={game.home_team} />
           <span className="team-name">{game.home_team}</span>
           <span className={`team-score ${isFinal && game.home_score > game.away_score ? 'winner' : ''}`}>
             {game.home_score || (isFinal ? 0 : '-')}
