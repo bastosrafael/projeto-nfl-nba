@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { queryAll } = require('../db/init');
+const { queryAll } = require('../db');
 
 router.get('/', async (req, res) => {
   const { league } = req.query;

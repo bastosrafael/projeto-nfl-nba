@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
-const { getDb } = require('./db/init');
+const { getDb, isPostgres } = require('./db');
 const app = require('./app');
 
 const PORT = process.env.PORT || 3001;
@@ -11,7 +11,15 @@ let shuttingDown = false;
 // Inicializar banco
 async function start() {
   await getDb();
-  console.log('[DB] Banco de dados SQLite inicializado');
+
+  if (isPostgres) {
+    const { runMigrations } = require('./db/migrate');
+    console.log('[DB] Modo PostgreSQL: aplicando migrations e validando tabelas...');
+    await runMigrations();
+    console.log('[DB] PostgreSQL pronto.');
+  } else {
+    console.log('[DB] Banco de dados SQLite inicializado');
+  }
   
   const { syncAll } = require('./sync/syncGames');
   const SYNC_INTERVAL = parseInt(process.env.SYNC_INTERVAL) || 300000;

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { queryOne, queryAll } = require('../db/init');
+const { queryOne, queryAll } = require('../db');
 const { getGameSummary, NOT_AVAILABLE } = require('../services/gameSummaryService');
 
 function getBrazilDateString(date = new Date()) {

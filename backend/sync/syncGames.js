@@ -1,4 +1,4 @@
-const { getDb, run, transaction, logSync, saveDb } = require('../db/init');
+const { getDb, run, transaction, logSync, saveDb } = require('../db');
 
 function toBrazilDateParts(dateStr) {
   if (!dateStr) {

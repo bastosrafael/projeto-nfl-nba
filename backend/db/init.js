@@ -2,9 +2,6 @@ const initSqlJs = require('sql.js');
 const path = require('path');
 const fs = require('fs');
 
-const postgresEnabled = Boolean(process.env.NETLIFY_DB_URL);
-const postgresAdapter = postgresEnabled ? require('./postgres') : null;
-
 const DB_PATH = path.join(__dirname, 'sports.db');
 
 let db = null;
@@ -190,6 +187,10 @@ async function transaction(callback) {
   }
 }
 
-const sqliteAdapter = { getDb, run, logSync, getSyncLogs, queryAll, queryOne, transaction, saveDb };
+async function close() {
+  // sql.js em memoria: nao ha conexoes persistentes para fechar.
+}
 
-module.exports = postgresEnabled ? postgresAdapter : sqliteAdapter;
+const sqliteAdapter = { getDb, run, logSync, getSyncLogs, queryAll, queryOne, transaction, saveDb, close };
+
+module.exports = sqliteAdapter;

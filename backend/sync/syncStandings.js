@@ -1,4 +1,4 @@
-const { getDb, run, logSync, queryAll, transaction, saveDb } = require('../db/init');
+const { getDb, run, logSync, queryAll, transaction, saveDb } = require('../db');
 
 function isFinalStatus(status) {
   if (!status) return false;

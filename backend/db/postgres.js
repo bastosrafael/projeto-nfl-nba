@@ -3,9 +3,9 @@ const { Pool } = require('pg');
 let pool = null;
 
 function getConnectionString() {
-  const connectionString = process.env.NETLIFY_DB_URL || process.env.DATABASE_URL;
+  const connectionString = process.env.DATABASE_URL || process.env.NETLIFY_DB_URL;
   if (!connectionString) {
-    throw new Error('NETLIFY_DB_URL ou DATABASE_URL precisa estar definida para usar PostgreSQL.');
+    throw new Error('DATABASE_URL precisa estar definida para usar PostgreSQL.');
   }
   return connectionString;
 }
