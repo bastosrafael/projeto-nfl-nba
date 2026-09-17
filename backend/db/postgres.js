@@ -2,24 +2,95 @@ const { Pool } = require('pg');
 
 let pool = null;
 
+function validateConnectionString(connectionString, source) {
+  let parsed;
+  try {
+    parsed = new URL(connectionString);
+  } catch (err) {
+    throw new Error(
+      `ERRO: ${source} invalida (nao e uma URL valida).\n` +
+      'Exemplo: postgresql://usuario:senha@host.render.com:5432/database'
+    );
+  }
+
+  const hostname = parsed.hostname;
+  const database = parsed.pathname.replace(/^\//, '');
+  const user = parsed.username;
+
+  if (!hostname || !database) {
+    throw new Error(
+      `ERRO: ${source} invalida.\n` +
+      'O hostname precisa conter o dominio completo do Render.\n' +
+      'Exemplo: postgresql://usuario:senha@host.render.com/database'
+    );
+  }
+
+  console.log('[DB CHECK]');
+  console.log(`  host: ${hostname}`);
+  console.log(`  database: ${database}`);
+  console.log(`  user: ${user}`);
+
+  if (!/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(hostname)) {
+    throw new Error(
+      'ERRO: DATABASE_URL invalida.\n' +
+      `O hostname "${hostname}" nao contem dominio completo.\n` +
+      'O host interno do Render (dpg-xxxx-a) so resolve dentro da rede do Render.\n' +
+      'Use o "External Database URL" com dominio completo, ex.:\n' +
+      '  postgresql://usuario:senha@dpg-xxxx-a.oregon-postgres.render.com/database'
+    );
+  }
+
+  return connectionString;
+}
+
 function getConnectionString() {
+  const source = process.env.DATABASE_URL ? 'DATABASE_URL' : 'NETLIFY_DB_URL';
   const connectionString = process.env.DATABASE_URL || process.env.NETLIFY_DB_URL;
   if (!connectionString) {
     throw new Error('DATABASE_URL precisa estar definida para usar PostgreSQL.');
   }
-  return connectionString;
+  return validateConnectionString(connectionString, source);
+}
+
+function isRenderHost(connectionString) {
+  try {
+    return new URL(connectionString).hostname.endsWith('.render.com');
+  } catch (err) {
+    return false;
+  }
 }
 
 function getPool() {
   if (!pool) {
+    const connectionString = getConnectionString();
+
+    console.log('[PG CONNECT]');
+    console.log(`  host: ${new URL(connectionString).hostname}`);
+    console.log(`  database: ${new URL(connectionString).pathname.replace(/^\//, '')}`);
+    console.log(`  user: ${new URL(connectionString).username}`);
+
     pool = new Pool({
-      connectionString: getConnectionString(),
+      connectionString,
       max: 3,
-      idleTimeoutMillis: 10000,
-      connectionTimeoutMillis: 10000
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 15000,
+      ...(isRenderHost(connectionString)
+        ? { ssl: { rejectUnauthorized: false } }
+        : {})
+    });
+
+    pool.on('error', (err) => {
+      console.error('[PG POOL ERROR]', err.message);
     });
   }
   return pool;
+}
+
+async function testConnection() {
+  const startedAt = Date.now();
+  const rows = await queryAll('SELECT NOW() AS now');
+  console.log(`[PG TEST] SELECT NOW() OK (${Date.now() - startedAt}ms) -> ${rows[0].now}`);
+  return true;
 }
 
 function translatePlaceholders(sql) {
@@ -167,5 +238,7 @@ module.exports = {
   logSync,
   getSyncLogs,
   saveDb,
-  close
+  close,
+  testConnection,
+  getConnectionString
 };

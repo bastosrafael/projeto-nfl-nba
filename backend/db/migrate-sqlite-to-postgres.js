@@ -15,7 +15,7 @@
 const fs = require('fs');
 const path = require('path');
 const initSqlJs = require('sql.js');
-const { run, queryAll, transaction } = require('./index');
+const { run, queryAll, transaction, testConnection } = require('./index');
 const { runMigrations } = require('./migrate');
 
 const SQLITE_PATH = path.join(__dirname, 'sports.db');
@@ -92,6 +92,9 @@ async function main() {
   }
 
   const report = [];
+
+  console.log('[MigrateData] 0) Testando conexao PostgreSQL (SELECT NOW())...');
+  await testConnection();
 
   console.log('[MigrateData] 1) Carregando sports.db...');
   const SQL = await initSqlJs();
