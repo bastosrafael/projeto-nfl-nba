@@ -61,10 +61,14 @@ async function syncNBA() {
       console.warn('[SYNC NBA] Times nao retornados pela ESPN. Times existentes preservados, atualizando apenas jogos.');
     }
     if (!gamesValid) {
-      console.warn('[SYNC NBA] Jogos nao retornados pela ESPN. Jogos existentes preservados (possivel off-season ou falha parcial).');
+      console.warn('[SYNC NBA] Jogos vazios ignorados. Dados existentes preservados.');
     }
 
-    console.log(`[SYNC NBA] Dados validados: ${nbaTeams.length} times, ${nbaGameRows.length} jogos. Substituindo dados antigos...`);
+    if (gamesValid) {
+      console.log(`[SYNC NBA] Dados validados: ${nbaTeams.length} times, ${nbaGameRows.length} jogos. Substituindo dados antigos...`);
+    } else {
+      console.log(`[SYNC NBA] Dados validados: ${nbaTeams.length} times, ${nbaGameRows.length} jogos. Atualizando apenas times...`);
+    }
 
     await transaction(async ({ run: txRun }) => {
       if (teamsValid) {
@@ -154,10 +158,14 @@ async function syncNFL() {
       console.warn('[SYNC NFL] Times nao retornados pela ESPN. Times existentes preservados, atualizando apenas jogos.');
     }
     if (!gamesValid) {
-      console.warn('[SYNC NFL] Jogos nao retornados pela ESPN. Jogos existentes preservados (possivel off-season ou falha parcial).');
+      console.warn('[SYNC NFL] Jogos vazios ignorados. Dados existentes preservados.');
     }
 
-    console.log(`[SYNC NFL] Dados validados: ${nflTeams.length} times, ${nflGames.length} jogos. Substituindo dados antigos...`);
+    if (gamesValid) {
+      console.log(`[SYNC NFL] Dados validados: ${nflTeams.length} times, ${nflGames.length} jogos. Substituindo dados antigos...`);
+    } else {
+      console.log(`[SYNC NFL] Dados validados: ${nflTeams.length} times, ${nflGames.length} jogos. Atualizando apenas times...`);
+    }
 
     await transaction(async ({ run: txRun }) => {
       if (teamsValid) {
